@@ -1,4 +1,5 @@
 #include <math.h>
+#include <vector>
 
 class Vector3
 {
@@ -112,3 +113,23 @@ public:
 	}
 
 };
+
+
+static double PI = 3.1415926535897932384626433832795;
+
+struct HeightMap
+{
+	float** heights;
+	int w, h;
+} ;
+
+struct Vertex
+{
+	Vector3 v;
+	Vector3 n;
+	Vertex(float x, float y, float z, float nx, float ny, float nz) : v(x,y,z), n(nx,ny,nz) {}
+};
+
+static void fghCircleTable(double **sint,double **cost,const int n);
+void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks);
+void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks, GLint anglearea);
