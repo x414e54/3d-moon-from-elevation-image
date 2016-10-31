@@ -1,9 +1,16 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include <math.h>
 #include <iostream>
 #include "geometry.h"
 #include <cstdlib>
+
+#if __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif __linux__
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
 /*
 
 Adaptation of freeglut solidsphere for this example

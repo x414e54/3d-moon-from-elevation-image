@@ -1,8 +1,12 @@
 #include <iostream>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include <SDL2/SDL.h>
+#if __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif __linux__
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 #include <math.h>
 #include "geometry.h"
 #include <vector>
