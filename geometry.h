@@ -1,6 +1,14 @@
 #include <math.h>
 #include <vector>
 
+#if __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif __linux__
+#include <GL/gl.h>
+#include <GL/glu.h>
+#endif
+
 class Vector3
 {
 private:

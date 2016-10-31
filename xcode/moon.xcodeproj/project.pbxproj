@@ -12,9 +12,10 @@
 		4489E2AC1DC70986008DA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4489E2AB1DC70986008DA97D /* Assets.xcassets */; };
 		4489E2AF1DC70986008DA97D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4489E2AD1DC70986008DA97D /* MainMenu.xib */; };
 		4489E2D71DC709EB008DA97D /* freeglutGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D31DC709EB008DA97D /* freeglutGeometry.cpp */; };
-		4489E2D81DC709EB008DA97D /* moon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D51DC709EB008DA97D /* moon.cpp */; };
 		4489E2D91DC709EB008DA97D /* segmentmoon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D61DC709EB008DA97D /* segmentmoon.cpp */; };
 		4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4489E2E21DC70CBF008DA97D /* SDL2.framework */; };
+		44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */; };
+		44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,9 +75,13 @@
 		4489E2C01DC70986008DA97D /* moonUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = moonUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4489E2D31DC709EB008DA97D /* freeglutGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = freeglutGeometry.cpp; path = ../freeglutGeometry.cpp; sourceTree = "<group>"; };
 		4489E2D41DC709EB008DA97D /* geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = geometry.h; path = ../geometry.h; sourceTree = "<group>"; };
-		4489E2D51DC709EB008DA97D /* moon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = moon.cpp; path = ../moon.cpp; sourceTree = "<group>"; };
 		4489E2D61DC709EB008DA97D /* segmentmoon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = segmentmoon.cpp; path = ../segmentmoon.cpp; sourceTree = "<group>"; };
 		4489E2DA1DC70CBF008DA97D /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../libs/SDL-mirror/Xcode/SDL/SDL.xcodeproj"; sourceTree = "<group>"; };
+		44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = metal_renderer.cpp; path = ../metal_renderer.cpp; sourceTree = "<group>"; };
+		44F9ABFD1DC7249C0041C358 /* metal_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = metal_renderer.hpp; path = ../metal_renderer.hpp; sourceTree = "<group>"; };
+		44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = opengl_renderer.cpp; path = ../opengl_renderer.cpp; sourceTree = "<group>"; };
+		44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = opengl_renderer.hpp; path = ../opengl_renderer.hpp; sourceTree = "<group>"; };
+		44F9AC001DC7249C0041C358 /* renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = renderer.h; path = ../renderer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,9 +154,13 @@
 		4489E2D21DC709CC008DA97D /* src */ = {
 			isa = PBXGroup;
 			children = (
+				44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */,
+				44F9ABFD1DC7249C0041C358 /* metal_renderer.hpp */,
+				44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */,
+				44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */,
+				44F9AC001DC7249C0041C358 /* renderer.h */,
 				4489E2D31DC709EB008DA97D /* freeglutGeometry.cpp */,
 				4489E2D41DC709EB008DA97D /* geometry.h */,
-				4489E2D51DC709EB008DA97D /* moon.cpp */,
 				4489E2D61DC709EB008DA97D /* segmentmoon.cpp */,
 			);
 			name = src;
@@ -339,9 +348,10 @@
 			files = (
 				4489E2AA1DC70986008DA97D /* main.m in Sources */,
 				4489E2D71DC709EB008DA97D /* freeglutGeometry.cpp in Sources */,
-				4489E2D81DC709EB008DA97D /* moon.cpp in Sources */,
 				4489E2D91DC709EB008DA97D /* segmentmoon.cpp in Sources */,
+				44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */,
 				4489E2A71DC70986008DA97D /* AppDelegate.m in Sources */,
+				44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

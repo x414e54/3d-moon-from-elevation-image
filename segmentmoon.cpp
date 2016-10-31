@@ -40,7 +40,6 @@ This is just a prototype.
 
 #include <iostream>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #if __APPLE__
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -52,20 +51,7 @@ This is just a prototype.
 #include "geometry.h"
 #include <vector>
 
-struct PlayerPosition
-{
-	float inclination;	
-	float azimuth;
-	float radius;
-	float viewheight;
-	float orientation;
-	float speed;
-	void update(float timeDelta)
-	{
-		azimuth+=speed*(timeDelta);
-	}
-};
-
+#include "opengl_renderer.hpp"
 
 //Finds the height from a uv heightmap
 float findHeight(const HeightMap &heightmap, float x, float y, float z, float offset)
@@ -95,38 +81,6 @@ inline void setColor(float height, float max)
 inline float getHeightFromColor(Uint8 r, Uint8 g, Uint8 b, float max)
 {
 	return (max*r*2.0f/255.0f) - max;
-}
-
-inline void render(GLuint index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
-{	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();//pos.radius + pos.viewheight set camera position to be just above terrain
-	gluLookAt(1.0f, 231.5f , 0.0f,
-			  0.0f, 231.0f, 0.0f,			  
-	         0.0f, 1.0f, 0.0f);
-	
-	float location = fmodf(pos.azimuth,anglearea*2.0f);
-	glRotatef(-90.0f,0.0f,0.0f,1.0f);			// rotate the model so we are above the dome
-	glRotatef(-90.0f,1.0f,0.0f,0.0f);			// rotate the model so we are above the dome
-	glRotatef(location, 0.0f, 1.0f, 0.0f);		// rotate only between 0 and 40
-	float segmentrotation = -(anglearea - 0.25); // change 0.25 to match 1/pixels per degree
-	if (location <= anglearea)						// which dome are we on?
-	{
-		glCallList(index);
-		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
-		glCallList(index+1);
-	} else {
-		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
-		glCallList(index+1);
-		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
-		glCallList(index);
-	}
-	SDL_GL_SwapBuffers();
 }
 
 //http://sdl.beuc.net/sdl.wiki/Pixel_Access
@@ -215,15 +169,15 @@ int main(int argc, char *argv[])
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,  2);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	SDL_Surface* screen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL);
+	SDL_Surface* screen = nullptr;//SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL);
 	if (!screen)
     	{
         SDL_Quit();
         return 1;
     	}
 
-	SDL_WM_SetCaption("Walking on the Moon","O");
-	SDL_EnableKeyRepeat(100, 100);
+	//SDL_WM_SetCaption("Walking on the Moon","O");
+	//SDL_EnableKeyRepeat(100, 100);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -238,7 +192,7 @@ int main(int argc, char *argv[])
 	GLuint index = glGenLists(1);
 
 	{
-		SDL_Surface *heightsimg = IMG_Load(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
+		SDL_Surface *heightsimg = nullptr;//IMG_Load(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
 		if (!heightsimg)
     		{
 			std::cout << "could not load image " << argv[1] << std::endl;
@@ -288,7 +242,8 @@ int main(int argc, char *argv[])
 	pos.speed = 14.0f*(MAXHEIGHTRANGE/7000.0f); //7km/s
 	pos.viewheight = 2.0f / MAXHEIGHTRANGE / 1000.0f;
 	pos.radius = findHeight(heightMap, list[0]->v.getX(),list[0]->v.getY(),list[0]->v.getZ(), 0.0f);
-	render(index, pos, anglearea,pixelsperdegree);
+	Renderer* renderer = new OpenGLRenderer();
+	renderer->render(index, pos, anglearea,pixelsperdegree);
 	bool down = false;
 
 	float lastTime = SDL_GetTicks();
@@ -333,7 +288,7 @@ int main(int argc, char *argv[])
 			createList(list, index+1, segment*segmentoffset, radius);
 		}
 
-		render(index,pos, anglearea,pixelsperdegree);
+		renderer->render(index,pos, anglearea,pixelsperdegree);
 		lastTime=time;
 	}
 
