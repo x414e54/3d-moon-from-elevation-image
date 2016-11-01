@@ -84,15 +84,13 @@ HeightMap heightMap;
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2)
-	{
+	if (argc < 2) {
 		std::cout << "Please specify location of nasa moon map" << std::endl;
 		return 1;
 	}
 
 	// Init SDL and opengl
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 	    return 1;
 	}
 
@@ -100,12 +98,11 @@ int main(int argc, char *argv[])
 	// TODO Possibly convert this to streaming later.
 	{
 		SDL_Surface *heightsimg = nullptr;//IMG_Load(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
-		if (!heightsimg)
-    		{
+		if (!heightsimg) {
 			std::cout << "could not load image " << argv[1] << std::endl;
     	    SDL_Quit();
     	    return 1;
-    		}
+		}
 
 		heightMap.h=heightsimg->h;
 		heightMap.w=heightsimg->w;
@@ -113,13 +110,12 @@ int main(int argc, char *argv[])
 		if (argc>2) { MAXHEIGHTRANGE = atoi(argv[2]); }
 		MAXHEIGHTRANGE= ((heightMap.w / (2*PI)) / 1738.14) *MAXHEIGHTRANGE;
 		heightMap.heights = new float*[heightMap.h];  
-		for (int i = 0; i < heightMap.h; i++)   
+		for (int i = 0; i < heightMap.h; i++) {
 		    heightMap.heights[i] = new float[heightMap.w];  
-	
-		for (int x=0; x <heightMap.w; x++)
-		{
-			for (int y=0; y <heightMap.h; y++)
-			{
+	    }
+		
+		for (int x=0; x <heightMap.w; x++) {
+			for (int y=0; y <heightMap.h; y++) {
 				Uint8 r, g, b;
 				SDL_GetRGB(getpixel(heightsimg,x,y), heightsimg->format, &r, &g, &b);
 				heightMap.heights[y][x] = getHeightFromColor(r,g,b, MAXHEIGHTRANGE);
@@ -160,14 +156,11 @@ int main(int argc, char *argv[])
 	bool toggle = false;
 	int segment = 1;
 	bool running = true;
-	while(running)
-	{
+	while(running) {
 		float time = SDL_GetTicks();
 		float timeDelta = time - lastTime;
-		if(SDL_PollEvent(&event))
-		{
-			switch(event.type)
-			{
+		if(SDL_PollEvent(&event)) {
+			switch(event.type) {
 				case SDL_QUIT: running = false;
 				/*case SDL_MOUSEMOTION:
 			  	//	  break;
@@ -187,13 +180,11 @@ int main(int argc, char *argv[])
 
 		float location = fmodf(pos.azimuth,anglearea*2.0f);
 
-		if (!toggle && location > anglearea)
-		{
+		if (!toggle && location > anglearea) {
 			segment++;
 			toggle = true;
 			renderer->updateList(list, list1, segment*segmentoffset, radius);
-		} else if (toggle && location <= anglearea)
-		{
+		} else if (toggle && location <= anglearea) {
 			segment++;
 			toggle = false;
 			renderer->updateList(list, list2, segment*segmentoffset, radius);
