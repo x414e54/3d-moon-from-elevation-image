@@ -46,18 +46,27 @@ OpenGLRenderer::OpenGLRenderer()
  
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+ 
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
     impl->window = SDL_CreateWindow("Walking on the Moon",
                        SDL_WINDOWPOS_UNDEFINED,
                        SDL_WINDOWPOS_UNDEFINED,
                        640, 480,
                        SDL_WINDOW_OPENGL);
-	
 	if (!impl->window) {
 	    // TODO Add some way to fail.
 	    return;
     }
-
+	
+	impl->context = SDL_GL_CreateContext(impl->window);
+	if (!impl->context) {
+	    // TODO Add some way to fail.
+	    return;
+    }
+	
+    SDL_GL_MakeCurrent(impl->window, impl->context);
+	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -71,6 +80,8 @@ OpenGLRenderer::OpenGLRenderer()
 
 OpenGLRenderer::~OpenGLRenderer()
 {
+    SDL_GL_MakeCurrent(0, 0);
+	SDL_GL_DeleteContext(impl->context);
 	SDL_DestroyWindow(impl->window);
 	delete this->impl;
 }
@@ -127,7 +138,7 @@ void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea,
 			  0.0f, 231.0f, 0.0f,			  
 	         0.0f, 1.0f, 0.0f);
 	
-	float location = 0.0f;//fmodf(pos.azimuth,anglearea*2.0f);
+	float location = fmodf(pos.azimuth,anglearea*2.0f);
 	glRotatef(-90.0f,0.0f,0.0f,1.0f);			// rotate the model so we are above the dome
 	glRotatef(-90.0f,1.0f,0.0f,0.0f);			// rotate the model so we are above the dome
 	glRotatef(location, 0.0f, 1.0f, 0.0f);		// rotate only between 0 and 40
