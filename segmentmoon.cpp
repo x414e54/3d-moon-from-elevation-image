@@ -146,9 +146,9 @@ int main(int argc, char *argv[])
 	}
 
 	// Init SDL and opengl
-	if(SDL_Init(SDL_INIT_VIDEO) < 0 )
+	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		return 1;
+	    return 1;
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,            8);
@@ -169,15 +169,16 @@ int main(int argc, char *argv[])
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,  2);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	SDL_Surface* screen = nullptr;//SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE | SDL_OPENGL);
-	if (!screen)
-    	{
-        SDL_Quit();
-        return 1;
-    	}
-
-	//SDL_WM_SetCaption("Walking on the Moon","O");
-	//SDL_EnableKeyRepeat(100, 100);
+    SDL_Window *window = SDL_CreateWindow("Walking on the Moon",
+                              SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              640, 480,
+                              SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
+	
+	if (!window) {
+	    SDL_Quit();
+	    return 1;
+    }
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -243,13 +244,16 @@ int main(int argc, char *argv[])
 	pos.viewheight = 2.0f / MAXHEIGHTRANGE / 1000.0f;
 	pos.radius = findHeight(heightMap, list[0]->v.getX(),list[0]->v.getY(),list[0]->v.getZ(), 0.0f);
 	Renderer* renderer = new OpenGLRenderer();
-	renderer->render(index, pos, anglearea,pixelsperdegree);
+	renderer->render(index, pos, anglearea, pixelsperdegree);
+	SDL_GL_SwapWindow(window);
+	
 	bool down = false;
 
 	float lastTime = SDL_GetTicks();
 	bool toggle = false;
 	int segment = 1;
-	while(true)
+	bool running = true;
+	while(running)
 	{
 		float time = SDL_GetTicks();
 		float timeDelta = time - lastTime;
@@ -257,7 +261,7 @@ int main(int argc, char *argv[])
 		{
 			switch(event.type)
 			{
-				case SDL_QUIT: SDL_Quit(); return 0; break;
+				case SDL_QUIT: running = false;
 				/*case SDL_MOUSEMOTION:
 			  	//	  break;
 				case SDL_KEYDOWN:
@@ -288,11 +292,15 @@ int main(int argc, char *argv[])
 			createList(list, index+1, segment*segmentoffset, radius);
 		}
 
-		renderer->render(index,pos, anglearea,pixelsperdegree);
+		renderer->render(index, pos, anglearea, pixelsperdegree);
+		SDL_GL_SwapWindow(window);
 		lastTime=time;
 	}
 
 	//Cleanup here
+	SDL_DestroyWindow(window);
+	delete renderer;
+	SDL_Quit();
 }
 
 

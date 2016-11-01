@@ -14,3 +14,8 @@ const char* MetalRenderer::get_name()
 {
     return MetalRenderer::type_name;
 }
+
+
+void MetalRenderer::render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
+{
+}

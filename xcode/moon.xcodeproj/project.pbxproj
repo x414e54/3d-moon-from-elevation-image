@@ -7,15 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4489E2A71DC70986008DA97D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2A61DC70986008DA97D /* AppDelegate.m */; };
-		4489E2AA1DC70986008DA97D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2A91DC70986008DA97D /* main.m */; };
-		4489E2AC1DC70986008DA97D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4489E2AB1DC70986008DA97D /* Assets.xcassets */; };
-		4489E2AF1DC70986008DA97D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4489E2AD1DC70986008DA97D /* MainMenu.xib */; };
 		4489E2D71DC709EB008DA97D /* freeglutGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D31DC709EB008DA97D /* freeglutGeometry.cpp */; };
 		4489E2D91DC709EB008DA97D /* segmentmoon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D61DC709EB008DA97D /* segmentmoon.cpp */; };
 		4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4489E2E21DC70CBF008DA97D /* SDL2.framework */; };
 		44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */; };
 		44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */; };
+		44F9AC061DC862D30041C358 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F9AC051DC862D30041C358 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,11 +62,6 @@
 
 /* Begin PBXFileReference section */
 		4489E2A21DC70986008DA97D /* moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		4489E2A51DC70986008DA97D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		4489E2A61DC70986008DA97D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		4489E2A91DC70986008DA97D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		4489E2AB1DC70986008DA97D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4489E2AE1DC70986008DA97D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		4489E2B01DC70986008DA97D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4489E2B51DC70986008DA97D /* moonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = moonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4489E2C01DC70986008DA97D /* moonUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = moonUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -82,6 +74,7 @@
 		44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = opengl_renderer.cpp; path = ../opengl_renderer.cpp; sourceTree = "<group>"; };
 		44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = opengl_renderer.hpp; path = ../opengl_renderer.hpp; sourceTree = "<group>"; };
 		44F9AC001DC7249C0041C358 /* renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = renderer.h; path = ../renderer.h; sourceTree = "<group>"; };
+		44F9AC051DC862D30041C358 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +82,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44F9AC061DC862D30041C358 /* OpenGL.framework in Frameworks */,
 				4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,6 +111,7 @@
 				4489E2D21DC709CC008DA97D /* src */,
 				4489E2A41DC70986008DA97D /* moon */,
 				4489E2A31DC70986008DA97D /* Products */,
+				44F9AC041DC862D30041C358 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -133,22 +128,9 @@
 		4489E2A41DC70986008DA97D /* moon */ = {
 			isa = PBXGroup;
 			children = (
-				4489E2A51DC70986008DA97D /* AppDelegate.h */,
-				4489E2A61DC70986008DA97D /* AppDelegate.m */,
-				4489E2AB1DC70986008DA97D /* Assets.xcassets */,
-				4489E2AD1DC70986008DA97D /* MainMenu.xib */,
 				4489E2B01DC70986008DA97D /* Info.plist */,
-				4489E2A81DC70986008DA97D /* Supporting Files */,
 			);
 			path = moon;
-			sourceTree = "<group>";
-		};
-		4489E2A81DC70986008DA97D /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				4489E2A91DC70986008DA97D /* main.m */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		4489E2D21DC709CC008DA97D /* src */ = {
@@ -175,6 +157,14 @@
 				4489E2E81DC70CBF008DA97D /* Standard DMG */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		44F9AC041DC862D30041C358 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				44F9AC051DC862D30041C358 /* OpenGL.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -320,8 +310,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4489E2AC1DC70986008DA97D /* Assets.xcassets in Resources */,
-				4489E2AF1DC70986008DA97D /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,11 +334,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4489E2AA1DC70986008DA97D /* main.m in Sources */,
 				4489E2D71DC709EB008DA97D /* freeglutGeometry.cpp in Sources */,
 				4489E2D91DC709EB008DA97D /* segmentmoon.cpp in Sources */,
 				44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */,
-				4489E2A71DC70986008DA97D /* AppDelegate.m in Sources */,
 				44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -383,17 +369,6 @@
 			targetProxy = 4489E2C11DC70986008DA97D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		4489E2AD1DC70986008DA97D /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4489E2AE1DC70986008DA97D /* Base */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		4489E2C71DC70986008DA97D /* Debug */ = {

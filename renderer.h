@@ -26,8 +26,10 @@ struct PlayerPosition
 class Renderer
 {
 public:
+    Renderer() {}
+	virtual ~Renderer() {}
     virtual const char* get_name() = 0;
-	virtual void render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree);
+	virtual void render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree) = 0;
 };
 
 #endif /* renderer_h */

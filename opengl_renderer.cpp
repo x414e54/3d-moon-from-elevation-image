@@ -24,7 +24,7 @@ const char* OpenGLRenderer::get_name()
     return OpenGLRenderer::type_name;
 }
 
-inline void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
+void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
 {	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -53,5 +53,4 @@ inline void OpenGLRenderer::render(int index, const PlayerPosition& pos, int ang
 		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
 		glCallList(index);
 	}
-	//SDL_GL_SwapBuffers();
 }
