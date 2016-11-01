@@ -117,18 +117,17 @@ int main(int argc, char *argv[])
 		heightMap.h=heightsimg->h;
 		heightMap.w=heightsimg->w;
 		MAXHEIGHTRANGE=7; // 7km from peak to circumference
+#if !__APPLE__
 		if (argc>2) { MAXHEIGHTRANGE = atoi(argv[2]); }
-		MAXHEIGHTRANGE= ((heightMap.w / (2*PI)) / 1738.14) *MAXHEIGHTRANGE;
-		heightMap.heights = new float*[heightMap.h];  
-		for (int i = 0; i < heightMap.h; i++) {
-		    heightMap.heights[i] = new float[heightMap.w];  
-	    }
+#endif
+		MAXHEIGHTRANGE = ((heightMap.w / (2*PI)) / 1738.14) *MAXHEIGHTRANGE;
+		heightMap.heights = new float[heightMap.h * heightMap.w];
 		
 		for (int x=0; x <heightMap.w; x++) {
 			for (int y=0; y <heightMap.h; y++) {
 				Uint8 r, g, b;
 				SDL_GetRGB(getpixel(heightsimg,x,y), heightsimg->format, &r, &g, &b);
-				heightMap.heights[y][x] = getHeightFromColor(r,g,b, MAXHEIGHTRANGE);
+				heightMap.heights[(y * heightMap.w) + x] = getHeightFromColor(r,g,b, MAXHEIGHTRANGE);
 			}
 		}
 		SDL_FreeSurface(heightsimg);

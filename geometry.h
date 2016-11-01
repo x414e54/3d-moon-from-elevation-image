@@ -122,7 +122,7 @@ static double PI = 3.1415926535897932384626433832795;
 
 struct HeightMap
 {
-	float** heights;
+	float* heights;
 	int w, h;
 } ;
 
@@ -149,10 +149,10 @@ inline float findHeight(const HeightMap &heightmap, float x, float y, float z, f
 	float v = 0.5 - (2.0 * (asin(d.getY()) / (2*PI)));	
 	// Calculate array position on image;
 
-	if (isnan(u) || isnan(v)) return 0;    // some uv are comming back nan this needs to be fixed, such as removing these vertices 
+	if (isnan(u) || isnan(v)) return 0;    // TODO some uv are comming back nan this needs to be fixed, such as removing these vertices 
 	int ix = ((int)round(u*w +offset))%heightmap.w;
 	int iy = (int)round(v*h);
-	return heightmap.heights[iy][ix];
+	return heightmap.heights[(iy * heightmap.w) + ix];
 }
 
 inline float getHeightFromColor(unsigned short r, unsigned short g, unsigned short b, float max)
