@@ -27,6 +27,8 @@ struct OpenGLRendererImpl
 // TODO All window creation per renderer for now, should be a separate abstraction.
 OpenGLRenderer::OpenGLRenderer()
 {
+    this->impl = new OpenGLRendererImpl();
+	
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -65,14 +67,12 @@ OpenGLRenderer::OpenGLRenderer()
 	gluLookAt(5.0f, 5.0f, 10.0f,
 			  0.0f, 0.0f, 0.0f,
 	          	    0.0, 1.0, 0.0);
-
-	GLuint index = glGenLists(1);
 }
 
 OpenGLRenderer::~OpenGLRenderer()
 {
-
 	SDL_DestroyWindow(impl->window);
+	delete this->impl;
 }
 
 const char* OpenGLRenderer::type_name = "OpenGL";

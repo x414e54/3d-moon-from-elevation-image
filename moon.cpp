@@ -13,8 +13,7 @@ stream only the part of the mesh we currently need to render. I thought about cr
 using some spacial database to store it and then stream from that. It might be posible to create a tri-tree for each triangle
 face on an icosophere.
 
-But as I only had a day to complete this I decided to create a uv sphere and cut the algorithm to only the section we could
-visually see. (Question11.cpp.old has a complete displaced sphere using the nasa texture for the heights.)
+I decided to create a uv sphere and cut the algorithm to only the section we could visually see.
 As the user then walks around, the heights of the vertecies in the dome can then be adjusted.
 As the nasa heightmap is essentialy a uv texture we can use the equation below to pick the correct u and v 
 from the image and then displace the vertex the correct amount. Currently there is a bug which means every two
@@ -41,9 +40,10 @@ This is just a prototype.
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <math.h>
-#include "geometry.h"
 #include <vector>
+#include <sstream>
 
+#include "geometry.h"
 #include "opengl_renderer.hpp"
 
 //http://sdl.beuc.net/sdl.wiki/Pixel_Access
@@ -90,14 +90,24 @@ int main(int argc, char *argv[])
 	}
 
 	// Init SDL and opengl
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 	    return 1;
 	}
 
     // Load all of heightmap into memory for now.
 	// TODO Possibly convert this to streaming later.
 	{
-		SDL_Surface *heightsimg = nullptr;//IMG_Load(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
+#if __APPLE__
+        char* base_path = SDL_GetBasePath();
+		std::stringstream temp_file;
+		temp_file << base_path;
+		temp_file << "temp.bmp";
+		std::string test = temp_file.str();
+        SDL_Surface *heightsimg = SDL_LoadBMP(test.c_str());
+		SDL_free(base_path);
+#else
+        SDL_Surface *heightsimg = SDL_LoadBMP(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
+#endif
 		if (!heightsimg) {
 			std::cout << "could not load image " << argv[1] << std::endl;
     	    SDL_Quit();
@@ -141,16 +151,11 @@ int main(int argc, char *argv[])
 	int list2 = renderer->createList(list, segmentoffset, radius);
 
 	SDL_Event event;
-	float x=heightMap.w/2.0f;
-	float y=heightMap.h/2.0f;
-	float rot=0.0f;
 	PlayerPosition pos;	
 	pos.speed = 14.0f*(MAXHEIGHTRANGE/7000.0f); //7km/s
 	pos.viewheight = 2.0f / MAXHEIGHTRANGE / 1000.0f;
 	pos.radius = findHeight(heightMap, list[0]->v.getX(),list[0]->v.getY(),list[0]->v.getZ(), 0.0f);
 	renderer->render(list1, pos, anglearea, pixelsperdegree);
-	
-	bool down = false;
 
 	float lastTime = SDL_GetTicks();
 	bool toggle = false;

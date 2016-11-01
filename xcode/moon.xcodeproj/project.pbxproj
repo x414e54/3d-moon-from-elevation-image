@@ -13,6 +13,7 @@
 		44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */; };
 		44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */; };
 		44F9AC061DC862D30041C358 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F9AC051DC862D30041C358 /* OpenGL.framework */; };
+		44F9AC0A1DC86F0D0041C358 /* temp.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44F9AC071DC86EF90041C358 /* temp.bmp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		44F9AC091DC86F020041C358 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				44F9AC0A1DC86F0D0041C358 /* temp.bmp in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		4489E2A21DC70986008DA97D /* moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4489E2B01DC70986008DA97D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -75,6 +89,7 @@
 		44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = opengl_renderer.hpp; path = ../opengl_renderer.hpp; sourceTree = "<group>"; };
 		44F9AC001DC7249C0041C358 /* renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = renderer.h; path = ../renderer.h; sourceTree = "<group>"; };
 		44F9AC051DC862D30041C358 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		44F9AC071DC86EF90041C358 /* temp.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = temp.bmp; path = ../temp.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +122,7 @@
 		4489E2991DC70986008DA97D = {
 			isa = PBXGroup;
 			children = (
+				44F9AC071DC86EF90041C358 /* temp.bmp */,
 				4489E2DA1DC70CBF008DA97D /* SDL.xcodeproj */,
 				4489E2D21DC709CC008DA97D /* src */,
 				4489E2A41DC70986008DA97D /* moon */,
@@ -177,6 +193,7 @@
 				4489E29E1DC70986008DA97D /* Sources */,
 				4489E29F1DC70986008DA97D /* Frameworks */,
 				4489E2A01DC70986008DA97D /* Resources */,
+				44F9AC091DC86F020041C358 /* CopyFiles */,
 			);
 			buildRules = (
 			);
