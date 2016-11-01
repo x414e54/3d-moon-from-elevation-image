@@ -40,48 +40,11 @@ This is just a prototype.
 
 #include <iostream>
 #include <SDL2/SDL.h>
-#if __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#elif __linux__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
 #include <math.h>
 #include "geometry.h"
 #include <vector>
 
 #include "opengl_renderer.hpp"
-
-//Finds the height from a uv heightmap
-float findHeight(const HeightMap &heightmap, float x, float y, float z, float offset)
-{
-	int h=heightmap.h-1;
-	int w=heightmap.w-1;
-	// Calculate u v
-	Vector3 d = Vector3(x,y,z);
-	Vector3::Normalize(d);
-
-	float u = 0.5 + (atan2(d.getZ(), d.getX()) / (2*PI));
-	float v = 0.5 - (2.0 * (asin(d.getY()) / (2*PI)));	
-	// Calculate array position on image;
-
-	if (isnan(u) || isnan(v)) return 0;    // some uv are comming back nan this needs to be fixed, such as removing these vertices 
-	int ix = ((int)round(u*w +offset))%heightmap.w;
-	int iy = (int)round(v*h);
-	return heightmap.heights[iy][ix];
-}
-
-inline void setColor(float height, float max)
-{
-	float c = ((height + max)) / (max*2.0f);
-	glColor3f(c,c,c);		
-}
-
-inline float getHeightFromColor(Uint8 r, Uint8 g, Uint8 b, float max)
-{
-	return (max*r*2.0f/255.0f) - max;
-}
 
 //http://sdl.beuc.net/sdl.wiki/Pixel_Access
 Uint32 getpixel(SDL_Surface *surface, int x, int y)
@@ -119,24 +82,6 @@ float MAXHEIGHTRANGE;
 
 HeightMap heightMap;
 
-void createList(std::vector<Vertex*> &list, GLuint index, float offset, int radius)
-{
-	glNewList(index, GL_COMPILE);
-		glBegin(GL_QUAD_STRIP);
-	
-			for(std::vector<Vertex*>::iterator vertex = list.begin(); vertex != list.end(); ++vertex)
-			{
-				float height =findHeight(heightMap, (*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ(),  offset);
-				setColor(height, MAXHEIGHTRANGE);
-				Vector3::Normalize((*vertex)->v);
-				(*vertex)->v*=radius+height;
-        	    glVertex3f((*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ());
-			}
-
-        glEnd();
-	glEndList();
-}
-
 int main(int argc, char *argv[])
 {
 	if (argc < 2)
@@ -151,47 +96,8 @@ int main(int argc, char *argv[])
 	    return 1;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,            8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,          8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,           8);
-	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE,          8);
- 
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,          16);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,            32);
- 
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE,        8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE,    8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,        8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE,    8);
- 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,  1);
- 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,  2);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-
-    SDL_Window *window = SDL_CreateWindow("Walking on the Moon",
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              640, 480,
-                              SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL);
-	
-	if (!window) {
-	    SDL_Quit();
-	    return 1;
-    }
-
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(90, (float)800 / (float)600, 0.00001f, 1000.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(5.0f, 5.0f, 10.0f,
-			  0.0f, 0.0f, 0.0f,
-	          	    0.0, 1.0, 0.0);
-
-	GLuint index = glGenLists(1);
-
+    // Load all of heightmap into memory for now.
+	// TODO Possibly convert this to streaming later.
 	{
 		SDL_Surface *heightsimg = nullptr;//IMG_Load(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
 		if (!heightsimg)
@@ -220,7 +126,9 @@ int main(int argc, char *argv[])
 			}
 		}
 		SDL_FreeSurface(heightsimg);
-	}	
+	}
+	
+	Renderer* renderer = new OpenGLRenderer();
 
 	int pixelsperdegree=heightMap.w/360;
 	int anglearea=20;
@@ -232,8 +140,9 @@ int main(int argc, char *argv[])
 	std::vector<Vertex*> list;
 	createSphereDome(&list, radius, totalslices, totalstacks, anglearea);
 	
-	createList (list, index, 0.0f, radius);
-	createList (list, index+1, segmentoffset, radius);
+	// TODO Convert this to vertex buffer
+	int list1 = renderer->createList(list, 0.0f, radius);
+	int list2 = renderer->createList(list, segmentoffset, radius);
 
 	SDL_Event event;
 	float x=heightMap.w/2.0f;
@@ -243,9 +152,7 @@ int main(int argc, char *argv[])
 	pos.speed = 14.0f*(MAXHEIGHTRANGE/7000.0f); //7km/s
 	pos.viewheight = 2.0f / MAXHEIGHTRANGE / 1000.0f;
 	pos.radius = findHeight(heightMap, list[0]->v.getX(),list[0]->v.getY(),list[0]->v.getZ(), 0.0f);
-	Renderer* renderer = new OpenGLRenderer();
-	renderer->render(index, pos, anglearea, pixelsperdegree);
-	SDL_GL_SwapWindow(window);
+	renderer->render(list1, pos, anglearea, pixelsperdegree);
 	
 	bool down = false;
 
@@ -284,21 +191,19 @@ int main(int argc, char *argv[])
 		{
 			segment++;
 			toggle = true;
-			createList(list, index, segment*segmentoffset, radius);
+			renderer->updateList(list, list1, segment*segmentoffset, radius);
 		} else if (toggle && location <= anglearea)
 		{
 			segment++;
 			toggle = false;
-			createList(list, index+1, segment*segmentoffset, radius);
+			renderer->updateList(list, list2, segment*segmentoffset, radius);
 		}
 
-		renderer->render(index, pos, anglearea, pixelsperdegree);
-		SDL_GL_SwapWindow(window);
+		renderer->render(list1, pos, anglearea, pixelsperdegree);
 		lastTime=time;
 	}
 
 	//Cleanup here
-	SDL_DestroyWindow(window);
 	delete renderer;
 	SDL_Quit();
 }

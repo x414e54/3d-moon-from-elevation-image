@@ -101,7 +101,7 @@ static void fghCircleTable(double **sint,double **cost,const int n)
 /*
  * Draws a solid sphere
  */
-void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks)
+void createSphereDome(std::vector<Vertex*>* list, double radius, int slices, int stacks)
 {
     int i,j;
 
@@ -150,7 +150,7 @@ void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices,
 /*
  * Draws a solid sphere
  */
-void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks, GLint anglearea)
+void createSphereDome(std::vector<Vertex*>* list, double radius, int slices, int stacks, int anglearea)
 {
     int i,j;
 

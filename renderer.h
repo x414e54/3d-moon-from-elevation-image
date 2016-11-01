@@ -9,6 +9,12 @@
 #ifndef renderer_h
 #define renderer_h
 
+#include "geometry.h"
+
+// TODO Move to renderer parameter
+extern float MAXHEIGHTRANGE;
+extern HeightMap heightMap;
+
 struct PlayerPosition
 {
 	float inclination;	
@@ -28,7 +34,11 @@ class Renderer
 public:
     Renderer() {}
 	virtual ~Renderer() {}
+	
     virtual const char* get_name() = 0;
+	
+	virtual int createList(std::vector<Vertex*> &list, float offset, int radius) = 0;
+	virtual void updateList(std::vector<Vertex*> &list, int index, float offset, int radius) = 0;
 	virtual void render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree) = 0;
 };
 

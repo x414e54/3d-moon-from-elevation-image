@@ -9,19 +9,109 @@
 #include "opengl_renderer.hpp"
 
 // This will be the only place gl.h is mentioned.
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
+// TODO remove glu
 #if __APPLE__
-#include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
-#elif __linux__
-#include <GL/gl.h>
+#else
 #include <GL/glu.h>
 #endif
+
+struct OpenGLRendererImpl
+{
+    SDL_GLContext context;
+    SDL_Window* window;
+};
+
+// TODO All window creation per renderer for now, should be a separate abstraction.
+OpenGLRenderer::OpenGLRenderer()
+{
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+ 
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+ 
+	SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
+ 
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+ 
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    impl->window = SDL_CreateWindow("Walking on the Moon",
+                       SDL_WINDOWPOS_UNDEFINED,
+                       SDL_WINDOWPOS_UNDEFINED,
+                       640, 480,
+                       SDL_WINDOW_OPENGL);
+	
+	if (!impl->window) {
+	    // TODO Add some way to fail.
+	    return;
+    }
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(90, (float)800 / (float)600, 0.00001f, 1000.0f);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(5.0f, 5.0f, 10.0f,
+			  0.0f, 0.0f, 0.0f,
+	          	    0.0, 1.0, 0.0);
+
+	GLuint index = glGenLists(1);
+}
+
+OpenGLRenderer::~OpenGLRenderer()
+{
+
+	SDL_DestroyWindow(impl->window);
+}
 
 const char* OpenGLRenderer::type_name = "OpenGL";
 
 const char* OpenGLRenderer::get_name()
 {
     return OpenGLRenderer::type_name;
+}
+
+int OpenGLRenderer::createList(std::vector<Vertex*> &list, float offset, int radius)
+{
+	GLuint index = glGenLists(1);
+	updateList(list, index, offset, radius);
+	return index;
+}
+
+inline void setColor(float height, float max)
+{
+	float c = ((height + max)) / (max*2.0f);
+	glColor3f(c,c,c);
+}
+
+void OpenGLRenderer::updateList(std::vector<Vertex*> &list, int index, float offset, int radius)
+{
+	glNewList(index, GL_COMPILE);
+		glBegin(GL_QUAD_STRIP);
+	
+			for(std::vector<Vertex*>::iterator vertex = list.begin(); vertex != list.end(); ++vertex)
+			{
+			    // TODO - this should be moved out and abstracted at a higher level.
+				float height = findHeight(heightMap, (*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ(),  offset);
+				setColor(height, MAXHEIGHTRANGE);
+				Vector3::Normalize((*vertex)->v);
+				(*vertex)->v*=radius+height;
+        	    glVertex3f((*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ());
+			}
+
+        glEnd();
+	glEndList();
 }
 
 void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
@@ -53,4 +143,5 @@ void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea,
 		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
 		glCallList(index);
 	}
+	SDL_GL_SwapWindow(impl->window);
 }

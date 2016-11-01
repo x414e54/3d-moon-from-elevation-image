@@ -1,13 +1,8 @@
+#ifndef geometry_h
+#define geometry_h
+
 #include <math.h>
 #include <vector>
-
-#if __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#elif __linux__
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
 
 class Vector3
 {
@@ -138,6 +133,31 @@ struct Vertex
 	Vertex(float x, float y, float z, float nx, float ny, float nz) : v(x,y,z), n(nx,ny,nz) {}
 };
 
-static void fghCircleTable(double **sint,double **cost,const int n);
-void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks);
-void createSphereDome(std::vector<Vertex*>* list, GLdouble radius, GLint slices, GLint stacks, GLint anglearea);
+void createSphereDome(std::vector<Vertex*>* list, double radius, int slices, int stacks);
+void createSphereDome(std::vector<Vertex*>* list, double radius, int slices, int stacks, int anglearea);
+
+//Finds the height from a uv heightmap
+inline float findHeight(const HeightMap &heightmap, float x, float y, float z, float offset)
+{
+	int h=heightmap.h-1;
+	int w=heightmap.w-1;
+	// Calculate u v
+	Vector3 d = Vector3(x,y,z);
+	Vector3::Normalize(d);
+
+	float u = 0.5 + (atan2(d.getZ(), d.getX()) / (2*PI));
+	float v = 0.5 - (2.0 * (asin(d.getY()) / (2*PI)));	
+	// Calculate array position on image;
+
+	if (isnan(u) || isnan(v)) return 0;    // some uv are comming back nan this needs to be fixed, such as removing these vertices 
+	int ix = ((int)round(u*w +offset))%heightmap.w;
+	int iy = (int)round(v*h);
+	return heightmap.heights[iy][ix];
+}
+
+inline float getHeightFromColor(unsigned short r, unsigned short g, unsigned short b, float max)
+{
+	return (max*r*2.0f/255.0f) - max;
+}
+
+#endif /* geometry_h */
