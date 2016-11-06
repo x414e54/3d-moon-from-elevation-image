@@ -8,6 +8,8 @@
 
 #include "opengl_renderer.hpp"
 
+#include <sstream>
+
 // This will be the only place gl.h is mentioned.
 #define GL_GLEXT_PROTOTYPES
 #include <SDL2/SDL.h>
@@ -25,6 +27,38 @@ struct OpenGLRendererImpl
 	GLuint vao = 0;
 	GLuint vbo = 0;
 };
+
+inline char* load_file(const char* name)
+{
+    char* code = NULL;
+	
+	char* base_path = SDL_GetBasePath();
+	std::stringstream temp_file;
+	temp_file << base_path;
+	temp_file << name;
+	std::string file_str = temp_file.str();
+	
+	SDL_RWops* data = SDL_RWFromFile(file_str.c_str(), "rb");
+	if (data != NULL) {
+        Sint64 size = SDL_RWsize(data);
+        code = (char*) SDL_malloc(size);
+
+        if (code != NULL) {
+            Sint64 total = 0;
+		    Sint64 read = 0;
+            while (total < size &&
+		           (read = SDL_RWread(data,
+			                          code + read, 1, (size - total))) > 0) {
+		        total += read;
+            }
+		}
+		
+        SDL_RWclose(data);
+	}
+	
+	return code;
+}
+
 
 // TODO All window creation per renderer for now, should be a separate abstraction.
 OpenGLRenderer::OpenGLRenderer()
@@ -69,11 +103,18 @@ OpenGLRenderer::OpenGLRenderer()
 	
     SDL_GL_MakeCurrent(impl->window, impl->context);
 	
-    const char* vert_list[1] = {""};
-    const char* frag_list[1] = {""};
+	char* vert_code = load_file("moonshader.vert");
+	char* frag_code = load_file("moonshader.frag");
+	
+    const char* vert_list[1] = {vert_code};
+    const char* frag_list[1] = {frag_code};
 	
     impl->vert = glCreateShaderProgramv(GL_VERTEX_SHADER, 1, vert_list);
     impl->frag = glCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, frag_list);
+	
+	SDL_free(vert_code);
+	SDL_free(frag_code);
+	
     glUniformBlockBinding(impl->vert, 0, 0);
     glUniformBlockBinding(impl->vert, 1, 1);
     glUniformBlockBinding(impl->frag, 0, 0);

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4489E2D91DC709EB008DA97D /* moon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D61DC709EB008DA97D /* moon.cpp */; };
 		4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4489E2E21DC70CBF008DA97D /* SDL2.framework */; };
+		44E84DA61DCF647200DECA48 /* moonshader.vert in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44EC41F31DCE16A000F29DC9 /* moonshader.vert */; };
+		44E84DA71DCF647200DECA48 /* moonshader.frag in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44EC41F61DCE16BC00F29DC9 /* moonshader.frag */; };
 		44EC41EE1DCE165900F29DC9 /* moonshader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 44EC41ED1DCE165900F29DC9 /* moonshader.metal */; };
 		44EC41F41DCE16A000F29DC9 /* moonshader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 44EC41F31DCE16A000F29DC9 /* moonshader.vert */; };
 		44EC41F71DCE16BC00F29DC9 /* moonshader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 44EC41F61DCE16BC00F29DC9 /* moonshader.frag */; };
@@ -70,6 +72,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				44E84DA61DCF647200DECA48 /* moonshader.vert in CopyFiles */,
+				44E84DA71DCF647200DECA48 /* moonshader.frag in CopyFiles */,
 				44F9AC0A1DC86F0D0041C358 /* temp.bmp in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
