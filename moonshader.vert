@@ -4,21 +4,29 @@
 #extension GL_ARB_explicit_uniform_location: require
 #extension GL_ARB_shading_language_420pack : enable
 
-layout(location = 0) in vec4 draw_info;
-layout(location = 1) in vec3 position;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec2 texcoord;
+layout(location = 0) in vec3 position;
+//layout(location = 1) in vec3 normal;
+//layout(location = 2) in vec2 texcoord;
 
-layout(std140, binding = 0) uniform GlobalParameters
+layout(std140, binding = 0) uniform WorldParameters
 {
     mat4 view;
     mat4 projection;
     mat4 view_projection;
+	float MAXHEIGHTRANGE;
+	int width;
+	int height;
+	int anglearea;
+	int pixelsperdegree;
 };
 
-layout(std140, binding = 1) uniform ShaderParameters
+layout(std140, binding = 1) uniform PlayerParameters
 {
-    mat4 transforms[256];
+	float inclination;	
+	float azimuth;
+	float radius;
+	float viewheight;
+	float orientation;
 };
 
 layout(location = 0) out gl_PerVertex
@@ -32,12 +40,9 @@ layout(location = 1) out vec3 vertex_position;
 layout(location = 2) out vec3 vertex_normal;
 layout(location = 3) out vec2 vertex_texcoord;
 
-layout(location = 4) flat out int draw_id;
-
 void main()
 {
-    draw_id = int(draw_info[2]);
-    mat4 transform = transforms[int(draw_info[0])];
+    mat4 transform;//
     gl_Position = view_projection * transform * vec4(position, 1.0);
     vertex_position = (transform * vec4(position, 1.0)).xyz;
     vertex_normal = (transform * vec4(normal, 0.0)).xyz;
