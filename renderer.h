@@ -9,11 +9,16 @@
 #ifndef renderer_h
 #define renderer_h
 
-#include "geometry.h"
+#define PI 3.14159265358979
 
-// TODO Move to renderer parameter
-extern float MAXHEIGHTRANGE;
-extern HeightMap heightMap;
+struct WorldParameters
+{
+	float MAXHEIGHTRANGE;
+	int width;
+	int height;
+	int anglearea;
+	int pixelsperdegree;
+};
 
 struct PlayerPosition
 {
@@ -37,9 +42,9 @@ public:
 	
     virtual const char* get_name() = 0;
 	
-	virtual int createList(std::vector<Vertex*> &list, float offset, int radius) = 0;
-	virtual void updateList(std::vector<Vertex*> &list, int index, float offset, int radius) = 0;
-	virtual void render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree) = 0;
+	virtual void setHeightMap(void* pixels, int width, int height) = 0;
+	virtual void setParameters(const WorldParameters& params) = 0;
+	virtual void render(const PlayerPosition& pos) = 0;
 };
 
 #endif /* renderer_h */

@@ -20,8 +20,9 @@
 
 struct OpenGLRendererImpl
 {
-    SDL_GLContext context;
-    SDL_Window* window;
+    SDL_GLContext context = NULL;
+    SDL_Window* window = NULL;
+	GLuint height_map = 0;
 };
 
 // TODO All window creation per renderer for now, should be a separate abstraction.
@@ -68,14 +69,14 @@ OpenGLRenderer::OpenGLRenderer()
     SDL_GL_MakeCurrent(impl->window, impl->context);
 	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glMatrixMode(GL_PROJECTION);
+/*	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(90, (float)800 / (float)600, 0.00001f, 1000.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(5.0f, 5.0f, 10.0f,
 			  0.0f, 0.0f, 0.0f,
-	          	    0.0, 1.0, 0.0);
+	          	    0.0, 1.0, 0.0);*/
 }
 
 OpenGLRenderer::~OpenGLRenderer()
@@ -93,42 +94,23 @@ const char* OpenGLRenderer::get_name()
     return OpenGLRenderer::type_name;
 }
 
-int OpenGLRenderer::createList(std::vector<Vertex*> &list, float offset, int radius)
+void OpenGLRenderer::setHeightMap(void* pixels, int width, int height)
 {
-	GLuint index = glGenLists(1);
-	updateList(list, index, offset, radius);
-	return index;
+    if (this->impl->height_map == 0) {
+        glGenTextures(1, &this->impl->height_map);
+        glBindTexture(GL_TEXTURE_BUFFER, this->impl->height_map);
+	    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, pixels);
+	}
 }
 
-inline void setColor(float height, float max)
+void OpenGLRenderer::setParameters(const WorldParameters& params)
 {
-	float c = ((height + max)) / (max*2.0f);
-	glColor3f(c,c,c);
 }
 
-void OpenGLRenderer::updateList(std::vector<Vertex*> &list, int index, float offset, int radius)
-{
-	glNewList(index, GL_COMPILE);
-		glBegin(GL_QUAD_STRIP);
-	
-			for(std::vector<Vertex*>::iterator vertex = list.begin(); vertex != list.end(); ++vertex)
-			{
-			    // TODO - this should be moved out and abstracted at a higher level.
-				float height = findHeight(heightMap, (*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ(),  offset);
-				setColor(height, MAXHEIGHTRANGE);
-				Vector3::Normalize((*vertex)->v);
-				(*vertex)->v*=radius+height;
-        	    glVertex3f((*vertex)->v.getX(),(*vertex)->v.getY(),(*vertex)->v.getZ());
-			}
-
-        glEnd();
-	glEndList();
-}
-
-void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree)
+void OpenGLRenderer::render(const PlayerPosition& pos)
 {	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
+/*	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -153,6 +135,6 @@ void OpenGLRenderer::render(int index, const PlayerPosition& pos, int anglearea,
 		glCallList(index+1);
 		glRotatef(segmentrotation,0.0f,1.0f,0.0f);
 		glCallList(index);
-	}
+	}*/
 	SDL_GL_SwapWindow(impl->window);
 }

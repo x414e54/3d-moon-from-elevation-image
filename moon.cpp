@@ -43,44 +43,7 @@ This is just a prototype.
 #include <vector>
 #include <sstream>
 
-#include "geometry.h"
 #include "opengl_renderer.hpp"
-
-//http://sdl.beuc.net/sdl.wiki/Pixel_Access
-Uint32 getpixel(SDL_Surface *surface, int x, int y)
-{
-    int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-    switch(bpp) {
-    case 1:
-        return *p;
-        break;
-
-    case 2:
-        return *(Uint16 *)p;
-        break;
-
-    case 3:
-        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-        break;
-
-    case 4:
-        return *(Uint32 *)p;
-        break;
-
-    default:
-        return 0;       /* shouldn't happen, but avoids warnings */
-    }
-}
-
-float MAXHEIGHTRANGE;
-
-HeightMap heightMap;
 
 int main(int argc, char *argv[])
 {
@@ -94,6 +57,9 @@ int main(int argc, char *argv[])
 	    return 1;
 	}
 
+	Renderer* renderer = new OpenGLRenderer();
+	WorldParameters parameters;
+	
     // Load all of heightmap into memory for now.
 	// TODO Possibly convert this to streaming later.
 	{
@@ -114,51 +80,32 @@ int main(int argc, char *argv[])
     	    return 1;
 		}
 
-		heightMap.h=heightsimg->h;
-		heightMap.w=heightsimg->w;
-		MAXHEIGHTRANGE=7; // 7km from peak to circumference
+		parameters.MAXHEIGHTRANGE=7; // 7km from peak to circumference
+		parameters.width = heightsimg->w;
+		parameters.height = heightsimg->h;
+	    parameters.pixelsperdegree = parameters.width / 360;
+	    parameters.anglearea = 20;
 #if !__APPLE__
-		if (argc>2) { MAXHEIGHTRANGE = atoi(argv[2]); }
+		if (argc>2) { parameters.MAXHEIGHTRANGE = atoi(argv[2]); }
 #endif
-		MAXHEIGHTRANGE = ((heightMap.w / (2*PI)) / 1738.14) *MAXHEIGHTRANGE;
-		heightMap.heights = new float[heightMap.h * heightMap.w];
+		parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / 1738.14) * parameters.MAXHEIGHTRANGE;
 		
-		for (int x=0; x <heightMap.w; x++) {
-			for (int y=0; y <heightMap.h; y++) {
-				Uint8 r, g, b;
-				SDL_GetRGB(getpixel(heightsimg,x,y), heightsimg->format, &r, &g, &b);
-				heightMap.heights[(y * heightMap.w) + x] = getHeightFromColor(r,g,b, MAXHEIGHTRANGE);
-			}
-		}
+		renderer->setParameters(parameters);
+		
+		// TODO - Converting format do not just assume RGB, etc.
+		renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w); // format);
 		SDL_FreeSurface(heightsimg);
 	}
-	
-	Renderer* renderer = new OpenGLRenderer();
-
-	int pixelsperdegree=heightMap.w/360;
-	int anglearea=20;
-	int totalslices=heightMap.w;
-	int totalstacks=heightMap.h;
-	int radius=heightMap.w / (2*PI);
-	float segmentoffset = (anglearea*pixelsperdegree);
-
-	std::vector<Vertex*> list;
-	createSphereDome(&list, radius, totalslices, totalstacks, anglearea);
-	
-	// TODO Convert this to vertex buffer
-	int list1 = renderer->createList(list, 0.0f, radius);
-	int list2 = renderer->createList(list, segmentoffset, radius);
 
 	SDL_Event event;
 	PlayerPosition pos;	
-	pos.speed = 14.0f*(MAXHEIGHTRANGE/7000.0f); //7km/s
-	pos.viewheight = 2.0f / MAXHEIGHTRANGE / 1000.0f;
-	pos.radius = findHeight(heightMap, list[0]->v.getX(),list[0]->v.getY(),list[0]->v.getZ(), 0.0f);
-	renderer->render(list1, pos, anglearea, pixelsperdegree);
+	pos.speed = 14.0f * (parameters.MAXHEIGHTRANGE/7000.0f); //7km/s
+	pos.viewheight = 2.0f / parameters.MAXHEIGHTRANGE / 1000.0f;
+	//pos.radius =
+	renderer->render(pos);
 
 	float lastTime = SDL_GetTicks();
-	bool toggle = false;
-	int segment = 1;
+	
 	bool running = true;
 	while(running) {
 		float time = SDL_GetTicks();
@@ -182,19 +129,7 @@ int main(int argc, char *argv[])
 		}
 		pos.update(timeDelta);
 
-		float location = fmodf(pos.azimuth,anglearea*2.0f);
-
-		if (!toggle && location > anglearea) {
-			segment++;
-			toggle = true;
-			renderer->updateList(list, list1, segment*segmentoffset, radius);
-		} else if (toggle && location <= anglearea) {
-			segment++;
-			toggle = false;
-			renderer->updateList(list, list2, segment*segmentoffset, radius);
-		}
-
-		renderer->render(list1, pos, anglearea, pixelsperdegree);
+		renderer->render(pos);
 		lastTime=time;
 	}
 

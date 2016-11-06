@@ -17,9 +17,9 @@ public:
     static const char* type_name;
     virtual const char* get_name();
 	
-	virtual int createList(std::vector<Vertex*> &list, float offset, int radius);
-	virtual void updateList(std::vector<Vertex*> &list, int index, float offset, int radius);
-	virtual void render(int index, const PlayerPosition& pos, int anglearea, int pixelsperdegree);
+	virtual void setHeightMap(void* pixels, int width, int height) = 0;
+	virtual void setParameters(const WorldParameters& params) = 0;
+	virtual void render(const PlayerPosition& pos);
 };
 
 #endif /* metal_renderer_hpp */
