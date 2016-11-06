@@ -24,6 +24,7 @@ struct OpenGLRendererImpl
 	GLuint vert = 0;
 	GLuint pipeline = 0;
 	GLuint params = 0;
+	GLuint pos = 0;
 	GLuint vao = 0;
 	GLuint vbo = 0;
 };
@@ -120,6 +121,16 @@ OpenGLRenderer::OpenGLRenderer()
     glUseProgramStages(impl->pipeline, GL_VERTEX_SHADER_BIT, impl->vert);
     glUseProgramStages(impl->pipeline, GL_FRAGMENT_SHADER_BIT, impl->frag);
 	
+    glGenBuffers(1, &this->impl->params);
+    glBindBuffer(GL_UNIFORM_BUFFER, impl->params);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(WorldParameters), nullptr, GL_STATIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, impl->params);
+	
+    glGenBuffers(1, &this->impl->pos);
+    glBindBuffer(GL_UNIFORM_BUFFER, impl->pos);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(PlayerPosition), nullptr, GL_DYNAMIC_DRAW);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 1, impl->pos);
+	
     glBindProgramPipeline(impl->pipeline);
 	
     GLenum buffers[] = {GL_COLOR_ATTACHMENT0};
@@ -176,15 +187,15 @@ void OpenGLRenderer::setHeightMap(void* pixels, int width, int height)
 
 void OpenGLRenderer::setParameters(const WorldParameters& params)
 {
-    if (this->impl->params == 0) {
-        glGenBuffers(1, &this->impl->params);
-	}
     glBindBuffer(GL_UNIFORM_BUFFER, impl->params);
-    glBufferData(GL_UNIFORM_BUFFER, 65536, nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(params), &params, GL_STATIC_DRAW);
 }
 
 void OpenGLRenderer::render(const PlayerPosition& pos)
 {
+    glBindBuffer(GL_UNIFORM_BUFFER, impl->pos);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(pos), &pos, GL_DYNAMIC_DRAW);
+	
     // The state should not have changed.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLES, 0, 3);
