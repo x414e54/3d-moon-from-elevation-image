@@ -52,6 +52,7 @@ inline char* load_file(const char* name)
 		        total += read;
             }
 		}
+		code[size - 1] = 0;
 		
         SDL_RWclose(data);
 	}
@@ -71,19 +72,11 @@ OpenGLRenderer::OpenGLRenderer()
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
  
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
- 
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
- 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
- 
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
  
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 
     impl->window = SDL_CreateWindow("Walking on the Moon",
                        SDL_WINDOWPOS_UNDEFINED,
@@ -103,6 +96,9 @@ OpenGLRenderer::OpenGLRenderer()
 	
     SDL_GL_MakeCurrent(impl->window, impl->context);
 	
+	glGenVertexArrays(1, &impl->vao);
+    glBindVertexArray(impl->vao);
+	
 	char* vert_code = load_file("moonshader.vert");
 	char* frag_code = load_file("moonshader.frag");
 	
@@ -118,14 +114,13 @@ OpenGLRenderer::OpenGLRenderer()
     glUniformBlockBinding(impl->vert, 0, 0);
     glUniformBlockBinding(impl->vert, 1, 1);
     glUniformBlockBinding(impl->frag, 0, 0);
-    glUniformBlockBinding(impl->frag, 1, 3);
+    glUniformBlockBinding(impl->frag, 1, 1);
 	
 	glGenProgramPipelines(1, &impl->pipeline);
     glUseProgramStages(impl->pipeline, GL_VERTEX_SHADER_BIT, impl->vert);
     glUseProgramStages(impl->pipeline, GL_FRAGMENT_SHADER_BIT, impl->frag);
- 
-	glGenVertexArrays(1, &impl->vao);
-    glBindVertexArray(impl->vao);
+	
+    glBindProgramPipeline(impl->pipeline);
 	
     GLenum buffers[] = {GL_COLOR_ATTACHMENT0};
     glDrawBuffers(1, buffers);
