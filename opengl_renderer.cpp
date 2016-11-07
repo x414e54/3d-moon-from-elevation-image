@@ -159,13 +159,20 @@ const char* OpenGLRenderer::get_name()
     return OpenGLRenderer::type_name;
 }
 
-void OpenGLRenderer::setHeightMap(void* pixels, int width, int height)
+void OpenGLRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 {
     if (this->impl->height_map == 0) {
         glGenTextures(1, &this->impl->height_map);
     }
     glBindTexture(GL_TEXTURE_2D, this->impl->height_map);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0,  GL_RGB, GL_UNSIGNED_BYTE, pixels);
+	
+    GLenum format = GL_NONE;
+    switch (bpp) {
+        case 3: format = GL_RGB;
+        case 4: format = GL_RGBA;
+    }
+	
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
     
     if (this->impl->vbo == 0) {
         glGenBuffers(1, &this->impl->vbo);

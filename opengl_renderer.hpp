@@ -21,7 +21,7 @@ public:
     static const char* type_name;
     virtual const char* get_name();
 	
-	virtual void setHeightMap(void* pixels, int width, int height);
+	virtual void setHeightMap(void* pixels, int width, int height, int bpp);
 	virtual void setParameters(const WorldParameters& params);
 	virtual void render(const PlayerPosition& pos);
 private:

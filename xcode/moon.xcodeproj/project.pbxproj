@@ -14,7 +14,7 @@
 		44EC41EE1DCE165900F29DC9 /* moonshader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 44EC41ED1DCE165900F29DC9 /* moonshader.metal */; };
 		44EC41F41DCE16A000F29DC9 /* moonshader.vert in Resources */ = {isa = PBXBuildFile; fileRef = 44EC41F31DCE16A000F29DC9 /* moonshader.vert */; };
 		44EC41F71DCE16BC00F29DC9 /* moonshader.frag in Resources */ = {isa = PBXBuildFile; fileRef = 44EC41F61DCE16BC00F29DC9 /* moonshader.frag */; };
-		44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */; };
+		44F9AC011DC7249C0041C358 /* metal_renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFC1DC7249C0041C358 /* metal_renderer.mm */; };
 		44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */; };
 		44F9AC061DC862D30041C358 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F9AC051DC862D30041C358 /* OpenGL.framework */; };
 		44F9AC0A1DC86F0D0041C358 /* temp.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44F9AC071DC86EF90041C358 /* temp.bmp */; };
@@ -90,7 +90,7 @@
 		44EC41ED1DCE165900F29DC9 /* moonshader.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; name = moonshader.metal; path = ../moonshader.metal; sourceTree = "<group>"; };
 		44EC41F31DCE16A000F29DC9 /* moonshader.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = moonshader.vert; path = ../moonshader.vert; sourceTree = "<group>"; };
 		44EC41F61DCE16BC00F29DC9 /* moonshader.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = moonshader.frag; path = ../moonshader.frag; sourceTree = "<group>"; };
-		44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = metal_renderer.cpp; path = ../metal_renderer.cpp; sourceTree = "<group>"; };
+		44F9ABFC1DC7249C0041C358 /* metal_renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = metal_renderer.mm; path = ../metal_renderer.mm; sourceTree = "<group>"; };
 		44F9ABFD1DC7249C0041C358 /* metal_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = metal_renderer.hpp; path = ../metal_renderer.hpp; sourceTree = "<group>"; };
 		44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = opengl_renderer.cpp; path = ../opengl_renderer.cpp; sourceTree = "<group>"; };
 		44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = opengl_renderer.hpp; path = ../opengl_renderer.hpp; sourceTree = "<group>"; };
@@ -159,7 +159,7 @@
 		4489E2D21DC709CC008DA97D /* src */ = {
 			isa = PBXGroup;
 			children = (
-				44F9ABFC1DC7249C0041C358 /* metal_renderer.cpp */,
+				44F9ABFC1DC7249C0041C358 /* metal_renderer.mm */,
 				44F9ABFD1DC7249C0041C358 /* metal_renderer.hpp */,
 				44F9ABFE1DC7249C0041C358 /* opengl_renderer.cpp */,
 				44F9ABFF1DC7249C0041C358 /* opengl_renderer.hpp */,
@@ -362,7 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4489E2D91DC709EB008DA97D /* moon.cpp in Sources */,
-				44F9AC011DC7249C0041C358 /* metal_renderer.cpp in Sources */,
+				44F9AC011DC7249C0041C358 /* metal_renderer.mm in Sources */,
 				44F9AC021DC7249C0041C358 /* opengl_renderer.cpp in Sources */,
 				44EC41EE1DCE165900F29DC9 /* moonshader.metal in Sources */,
 			);

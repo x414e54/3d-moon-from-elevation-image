@@ -92,9 +92,8 @@ int main(int argc, char *argv[])
         
         renderer->setParameters(parameters);
         
-        // TODO - Converting format do not just assume RGB, etc.
-        SDL_assert(heightsimg->format->BytesPerPixel == 3);
-        renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w); // format);
+        // TODO - Converting format do not just assume RGB, etc.
+        renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w, heightsimg->format->BytesPerPixel); // format);
         SDL_FreeSurface(heightsimg);
     }
 

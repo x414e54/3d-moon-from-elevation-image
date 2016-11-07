@@ -15,7 +15,7 @@ const char* MetalRenderer::get_name()
     return MetalRenderer::type_name;
 }
 
-void MetalRenderer::setHeightMap(void* pixels, int width, int height)
+void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 {
 }
 

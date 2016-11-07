@@ -42,7 +42,7 @@ public:
 	
     virtual const char* get_name() = 0;
 	
-	virtual void setHeightMap(void* pixels, int width, int height) = 0;
+	virtual void setHeightMap(void* pixels, int width, int height, int bpp) = 0;
 	virtual void setParameters(const WorldParameters& params) = 0;
 	virtual void render(const PlayerPosition& pos) = 0;
 };
