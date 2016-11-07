@@ -164,7 +164,7 @@ void OpenGLRenderer::setHeightMap(void* pixels, int width, int height)
     if (this->impl->height_map == 0) {
         glGenTextures(1, &this->impl->height_map);
     }
-    glBindTexture(GL_TEXTURE_BUFFER, this->impl->height_map);
+    glBindTexture(GL_TEXTURE_2D, this->impl->height_map);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0,  GL_RGB, GL_UNSIGNED_BYTE, pixels);
     
     if (this->impl->vbo == 0) {
