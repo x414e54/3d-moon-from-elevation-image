@@ -6,20 +6,20 @@ layout(location = 0) in vec3 position;
 
 uniform WorldParameters
 {
-	float MAXHEIGHTRANGE;
-	int width;
-	int height;
-	int anglearea;
-	int pixelsperdegree;
+    float MAXHEIGHTRANGE;
+    int width;
+    int height;
+    int anglearea;
+    int pixelsperdegree;
 };
 
 uniform PlayerParameters
 {
-	float inclination;	
-	float azimuth;
-	float radius;
-	float viewheight;
-	float orientation;
+    float inclination;	
+    float azimuth;
+    float radius;
+    float viewheight;
+    float orientation;
 };
 
 out gl_PerVertex
@@ -34,6 +34,6 @@ out vec2 vertex_texcoord;
 void main()
 {
     gl_Position = vec4(position.xzy, 1.0);
-	vertex_texcoord = vec2(0.0, 0.0);
+    vertex_texcoord = vec2(0.0, 0.0);
 }
 

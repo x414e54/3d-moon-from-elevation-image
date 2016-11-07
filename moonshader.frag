@@ -4,11 +4,11 @@
 
 uniform WorldParameters
 {
-	float MAXHEIGHTRANGE;
-	int width;
-	int height;
-	int anglearea;
-	int pixelsperdegree;
+    float MAXHEIGHTRANGE;
+    int width;
+    int height;
+    int anglearea;
+    int pixelsperdegree;
 };
 
 uniform sampler2D heightmap;
@@ -19,6 +19,6 @@ out vec4 rt0;
 
 void main()
 {
-	vec4 texel = texture(heightmap, vertex_texcoord);
+    vec4 texel = texture(heightmap, vertex_texcoord);
     rt0 = vec4(texel.rgb, 1.0);
 }

@@ -47,95 +47,96 @@ This is just a prototype.
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2) {
-		std::cout << "Please specify location of nasa moon map" << std::endl;
-		return 1;
-	}
+    if (argc < 2) {
+        std::cout << "Please specify location of nasa moon map" << std::endl;
+        return 1;
+    }
 
-	// Init SDL and opengl
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-	    return 1;
-	}
+    // Init SDL and opengl
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        return 1;
+    }
 
-	Renderer* renderer = new OpenGLRenderer();
-	WorldParameters parameters;
-	
+    Renderer* renderer = new OpenGLRenderer();
+    WorldParameters parameters;
+    
     // Load all of heightmap into memory for now.
-	// TODO Possibly convert this to streaming later.
-	{
+    // TODO Possibly convert this to streaming later.
+    {
 #if __APPLE__
         char* base_path = SDL_GetBasePath();
-		std::stringstream temp_file;
-		temp_file << base_path;
-		temp_file << "temp.bmp";
-		std::string test = temp_file.str();
+        std::stringstream temp_file;
+        temp_file << base_path;
+        temp_file << "temp.bmp";
+        std::string test = temp_file.str();
         SDL_Surface *heightsimg = SDL_LoadBMP(test.c_str());
-		SDL_free(base_path);
+        SDL_free(base_path);
 #else
         SDL_Surface *heightsimg = SDL_LoadBMP(argv[1]);//"WAC_GLD100_E000N1800_004P.TIF"); //http://wms.lroc.asu.edu/lroc/global_product/128_ppd_DEM
 #endif
-		if (!heightsimg) {
-			std::cout << "could not load image " << argv[1] << std::endl;
-    	    SDL_Quit();
-    	    return 1;
-		}
+        if (!heightsimg) {
+            std::cout << "could not load image " << argv[1] << std::endl;
+            SDL_Quit();
+            return 1;
+        }
 
-		parameters.MAXHEIGHTRANGE=7; // 7km from peak to circumference
-		parameters.width = heightsimg->w;
-		parameters.height = heightsimg->h;
-	    parameters.pixelsperdegree = parameters.width / 360;
-	    parameters.anglearea = 20;
+        parameters.MAXHEIGHTRANGE=7; // 7km from peak to circumference
+        parameters.width = heightsimg->w;
+        parameters.height = heightsimg->h;
+        parameters.pixelsperdegree = parameters.width / 360;
+        parameters.anglearea = 20;
 #if !__APPLE__
-		if (argc>2) { parameters.MAXHEIGHTRANGE = atoi(argv[2]); }
+        if (argc>2) { parameters.MAXHEIGHTRANGE = atoi(argv[2]); }
 #endif
-		parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / 1738.14) * parameters.MAXHEIGHTRANGE;
-		
-		renderer->setParameters(parameters);
-		
-		// TODO - Converting format do not just assume RGB, etc.
-		renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w); // format);
-		SDL_FreeSurface(heightsimg);
-	}
+        parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / 1738.14) * parameters.MAXHEIGHTRANGE;
+        
+        renderer->setParameters(parameters);
+        
+        // TODO - Converting format do not just assume RGB, etc.
+        SDL_assert(heightsimg->format->BytesPerPixel == 3);
+        renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w); // format);
+        SDL_FreeSurface(heightsimg);
+    }
 
-	SDL_Event event;
-	PlayerPosition pos;	
-	pos.speed = 14.0f * (parameters.MAXHEIGHTRANGE/7000.0f); //7km/s
-	pos.viewheight = 2.0f / parameters.MAXHEIGHTRANGE / 1000.0f;
-	//pos.radius =
-	renderer->render(pos);
+    SDL_Event event;
+    PlayerPosition pos;    
+    pos.speed = 14.0f * (parameters.MAXHEIGHTRANGE/7000.0f); //7km/s
+    pos.viewheight = 2.0f / parameters.MAXHEIGHTRANGE / 1000.0f;
+    //pos.radius =
+    renderer->render(pos);
 
-	float lastTime = SDL_GetTicks();
-	
-	bool running = true;
-	while(running) {
-		float time = SDL_GetTicks();
-		float timeDelta = time - lastTime;
-		if(SDL_PollEvent(&event)) {
-			switch(event.type) {
-				case SDL_QUIT: running = false;
-				/*case SDL_MOUSEMOTION:
-			  	//	  break;
-				case SDL_KEYDOWN:
-			  		switch(event.key.keysym.sym)
-			  		{
-			  			case SDLK_LEFT: break;
-			  			case SDLK_UP: break;
-			  			case SDLK_DOWN:  break;
-			  			case SDLK_RIGHT: break;
-						default: break;
-			  		}
-					break;*/
-			}
-		}
-		pos.update(timeDelta);
+    float lastTime = SDL_GetTicks();
+    
+    bool running = true;
+    while(running) {
+        float time = SDL_GetTicks();
+        float timeDelta = time - lastTime;
+        if(SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_QUIT: running = false;
+                /*case SDL_MOUSEMOTION:
+                  //      break;
+                case SDL_KEYDOWN:
+                      switch(event.key.keysym.sym)
+                      {
+                          case SDLK_LEFT: break;
+                          case SDLK_UP: break;
+                          case SDLK_DOWN:  break;
+                          case SDLK_RIGHT: break;
+                        default: break;
+                      }
+                    break;*/
+            }
+        }
+        pos.update(timeDelta);
 
-		renderer->render(pos);
-		lastTime=time;
-	}
+        renderer->render(pos);
+        lastTime=time;
+    }
 
-	//Cleanup here
-	delete renderer;
-	SDL_Quit();
+    //Cleanup here
+    delete renderer;
+    SDL_Quit();
 }
 
 
