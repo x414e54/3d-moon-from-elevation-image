@@ -82,7 +82,7 @@ OpenGLRenderer::OpenGLRenderer()
     impl->window = SDL_CreateWindow("Walking on the Moon",
                        SDL_WINDOWPOS_UNDEFINED,
                        SDL_WINDOWPOS_UNDEFINED,
-                       640, 480,
+                       800, 600,
                        SDL_WINDOW_OPENGL);
     if (!impl->window) {
         // TODO Add some way to fail.
