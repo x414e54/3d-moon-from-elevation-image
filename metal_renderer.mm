@@ -15,6 +15,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
+@interface DrawDelegate : NSObject <MTKViewDelegate> {
+    MetalRendererImpl* _impl;
+}
+
+@property (nonatomic) MetalRendererImpl* impl;
+@end
+
 struct MetalRendererImpl
 {
     SDL_Window* window = NULL;
@@ -22,7 +29,6 @@ struct MetalRendererImpl
     
     id <MTLDevice> device;
     id <MTLCommandQueue> cq;
-    id <MTLCommandBuffer> cb;
     id <MTLLibrary> library;
     
     id <MTLTexture> height_map;
@@ -32,6 +38,8 @@ struct MetalRendererImpl
     id <MTLBuffer> params;
     id <MTLBuffer> pos;
     id <MTLBuffer> vertex;
+    
+    DrawDelegate* delegate;
 };
 
 const char* MetalRenderer::type_name = "Metal";
@@ -40,6 +48,42 @@ const char* MetalRenderer::get_name()
 {
     return MetalRenderer::type_name;
 }
+
+@implementation DrawDelegate
+
+@synthesize impl = _impl;
+
+- (void)mtkView:(MTKView *)view
+drawableSizeWillChange:(CGSize)size
+{
+
+}
+
+- (void)encode:(id <MTLCommandBuffer>)cb
+{
+    id <MTLRenderCommandEncoder> encoder = [cb renderCommandEncoderWithDescriptor:_impl->metal_view.currentRenderPassDescriptor];
+    [encoder setRenderPipelineState:_impl->pipeline];
+    [encoder setFragmentTexture:_impl->height_map
+                 atIndex:0];
+    [encoder setVertexBuffer:_impl->vertex
+                 offset:0
+                 atIndex:0];
+    [encoder drawPrimitives:MTLPrimitiveTypeTriangle
+                 vertexStart:0
+                 vertexCount:3
+                 instanceCount:1];
+    [encoder endEncoding];
+}
+
+- (void)drawInMTKView:(MTKView *)view
+{
+    id <MTLCommandBuffer> cb = [_impl->cq commandBuffer];
+    [self encode: cb];
+    [cb presentDrawable: _impl->metal_view.currentDrawable];
+    [cb commit];
+}
+
+@end
 
 MetalRenderer::MetalRenderer()
 {
@@ -63,6 +107,11 @@ MetalRenderer::MetalRenderer()
     NSView *view = info.info.cocoa.window.contentView;
 
     impl->metal_view = [[MTKView alloc] initWithFrame:view.frame device:impl->device];
+    [impl->metal_view setPaused:true];
+    [impl->metal_view setNeedsDisplay:false];
+    impl->delegate = [[DrawDelegate alloc] init];
+    [impl->delegate setImpl: impl];
+    [impl->metal_view setColorPixelFormat:MTLPixelFormatBGRA8Unorm];
     [view addSubview:impl->metal_view];
     
     impl->library = [impl->device newDefaultLibrary];
@@ -75,12 +124,17 @@ MetalRenderer::MetalRenderer()
     pipeline_desc.vertexFunction = impl->vert;
     pipeline_desc.fragmentFunction = impl->frag;
     
-    /*impl->pipeline = [impl->device newRenderPipelineStateWithDescriptor:pipeline_desc];
+    NSError *err = nil;
+    impl->pipeline = [impl->device newRenderPipelineStateWithDescriptor:pipeline_desc error:&err];
     
-    impl->params = [impl->device newBufferWithLength: sizeof(WorldParameters)];
-    impl->pos = [impl->device newBufferWithLength: sizeof(PlayerPosition)];*/
+    impl->params = [impl->device newBufferWithLength:sizeof(WorldParameters) options:MTLResourceOptionCPUCacheModeDefault];
+    impl->pos = [impl->device newBufferWithLength:sizeof(PlayerPosition) options:MTLResourceOptionCPUCacheModeDefault];
     
     [impl->metal_view setClearColor: MTLClearColorMake(1.0, 0.0, 0.0, 1.0)];
+    
+    impl->cq = [impl->device newCommandQueue];
+    
+    [impl->metal_view setDelegate:impl->delegate];
 }
 
 MetalRenderer::~MetalRenderer()
@@ -110,10 +164,6 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
                            -0.5, 0.0, 0.5,
                             0.5, 0.0, 0.5};
     impl->vertex = [impl->device newBufferWithBytes:vertex_data length:sizeof(vertex_data) options:MTLResourceOptionCPUCacheModeDefault];
-    
-    /*[impl->encoder setVertexBuffer:impl->vertex
-                       offset:0
-                       atIndex:0];*/
 }
 
 void MetalRenderer::setParameters(const WorldParameters& params)
@@ -124,7 +174,6 @@ void MetalRenderer::setParameters(const WorldParameters& params)
 void MetalRenderer::render(const PlayerPosition& pos)
 {
     impl->pos = [impl->device newBufferWithBytes:&pos length:sizeof(pos) options:MTLResourceOptionCPUCacheModeDefault];
-    [impl->cb presentDrawable: impl->metal_view.currentDrawable];
-    [impl->cb commit];
+    
     [impl->metal_view draw];
 }
