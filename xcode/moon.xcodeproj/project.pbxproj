@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		440C2DD91DD1CD3C0031B918 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 440C2DD81DD1CD3C0031B918 /* Metal.framework */; };
+		440C2DDB1DD1CD410031B918 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 440C2DDA1DD1CD410031B918 /* MetalKit.framework */; };
 		4489E2D91DC709EB008DA97D /* moon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4489E2D61DC709EB008DA97D /* moon.cpp */; };
 		4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4489E2E21DC70CBF008DA97D /* SDL2.framework */; };
 		44E84DA61DCF647200DECA48 /* moonshader.vert in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44EC41F31DCE16A000F29DC9 /* moonshader.vert */; };
@@ -81,6 +83,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		440C2DD81DD1CD3C0031B918 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		440C2DDA1DD1CD410031B918 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		4489E2A21DC70986008DA97D /* moon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = moon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4489E2B01DC70986008DA97D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4489E2B51DC70986008DA97D /* moonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = moonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,6 +108,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				440C2DDB1DD1CD410031B918 /* MetalKit.framework in Frameworks */,
+				440C2DD91DD1CD3C0031B918 /* Metal.framework in Frameworks */,
 				44F9AC061DC862D30041C358 /* OpenGL.framework in Frameworks */,
 				4489E2E91DC70CE2008DA97D /* SDL2.framework in Frameworks */,
 			);
@@ -186,6 +192,8 @@
 		44F9AC041DC862D30041C358 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				440C2DDA1DD1CD410031B918 /* MetalKit.framework */,
+				440C2DD81DD1CD3C0031B918 /* Metal.framework */,
 				44F9AC051DC862D30041C358 /* OpenGL.framework */,
 			);
 			name = Frameworks;

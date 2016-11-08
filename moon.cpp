@@ -43,6 +43,7 @@ This is just a prototype.
 #include <vector>
 #include <sstream>
 
+#include "metal_renderer.hpp"
 #include "opengl_renderer.hpp"
 
 int main(int argc, char *argv[])
@@ -57,7 +58,13 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+// For now no option to select
+#if __APPLE__
+    Renderer* renderer = new MetalRenderer();
+#else
     Renderer* renderer = new OpenGLRenderer();
+#endif
+
     WorldParameters parameters;
     
     // Load all of heightmap into memory for now.
