@@ -179,9 +179,13 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
      bytesPerRow:width * bpp];
     
     // Collapsed geosphere, just a triangle.
-    float vertex_data[] = { 0.0, 0.0,-0.5,
+    float vertex_data[] = /*{ 0.0, 0.0,-0.5,
                            -0.5, 0.0, 0.5,
-                            0.5, 0.0, 0.5};
+                            0.5, 0.0, 0.5};*/
+                            // Test fullscreen triangle
+                        { 0.0,  1.0, 0.0,
+                         -1.0, -1.0, 0.0,
+                          1.0, -1.0, 0.0};
     impl->vertex = [impl->device newBufferWithBytes:vertex_data length:sizeof(vertex_data) options:MTLResourceOptionCPUCacheModeDefault];
 }
 

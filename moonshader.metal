@@ -34,13 +34,15 @@ struct VertexOut
     float2 texcoord;
 };
 
-vertex VertexOut moon_vertex(device packed_float3 &position [[buffer(0)]],
-                          constant WorldParameters &params [[buffer(1)]],
-                          constant PlayerParameters &pos [[buffer(2)]],
+vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
+                          constant WorldParameters& params [[buffer(1)]],
+                          constant PlayerParameters& pos [[buffer(2)]],
                           texture2d<float, access::read> height_map [[texture(0)]],
                           uint vertexID [[vertex_id]])
 {
     VertexOut out;
+    out.position = float4(position[vertexID], 1.0);
+    out.texcoord = float2(0.5);
     float height = height_map.read(uint2(0)).r;
     return out;
 }
