@@ -31,13 +31,16 @@ struct MetalRendererImpl
     id <MTLCommandQueue> cq;
     id <MTLLibrary> library;
     
+    id <MTLSamplerState> terrain_sampler;
+    id <MTLTexture> terrain;
     id <MTLTexture> height_map;
     id <MTLFunction> frag;
     id <MTLFunction> vert;
     id <MTLRenderPipelineState> pipeline;
-    id <MTLBuffer> params;
-    id <MTLBuffer> pos;
     id <MTLBuffer> vertex;
+    
+    const WorldParameters* params;
+    const PlayerPosition* pos;
     
     DrawDelegate* delegate;
 };
@@ -53,7 +56,7 @@ const char* MetalRenderer::get_name()
 
 @synthesize impl = _impl;
 
-- (void)mtkView:(MTKView *)view
+- (void)mtkView:(MTKView*)view
 drawableSizeWillChange:(CGSize)size
 {
 
@@ -63,10 +66,20 @@ drawableSizeWillChange:(CGSize)size
 {
     id <MTLRenderCommandEncoder> encoder = [cb renderCommandEncoderWithDescriptor:_impl->metal_view.currentRenderPassDescriptor];
     [encoder setRenderPipelineState:_impl->pipeline];
+    [encoder setVertexTexture:_impl->height_map
+                 atIndex:0];
     [encoder setFragmentTexture:_impl->height_map
+                 atIndex:0];
+    [encoder setFragmentSamplerState:_impl->terrain_sampler
                  atIndex:0];
     [encoder setVertexBuffer:_impl->vertex
                  offset:0
+                 atIndex:0];
+    [encoder setVertexBytes:_impl->params length:sizeof(WorldParameters)
+                 atIndex:1];
+    [encoder setVertexBytes:_impl->pos length:sizeof(PlayerPosition)
+                 atIndex:2];
+    [encoder setFragmentBytes:_impl->params length:sizeof(WorldParameters)
                  atIndex:0];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle
                  vertexStart:0
@@ -75,7 +88,7 @@ drawableSizeWillChange:(CGSize)size
     [encoder endEncoding];
 }
 
-- (void)drawInMTKView:(MTKView *)view
+- (void)drawInMTKView:(MTKView*)view
 {
     id <MTLCommandBuffer> cb = [_impl->cq commandBuffer];
     [self encode: cb];
@@ -104,7 +117,7 @@ MetalRenderer::MetalRenderer()
     struct SDL_SysWMinfo info;
     SDL_GetWindowWMInfo(impl->window, &info);
     
-    NSView *view = info.info.cocoa.window.contentView;
+    NSView* view = info.info.cocoa.window.contentView;
 
     impl->metal_view = [[MTKView alloc] initWithFrame:view.frame device:impl->device];
     [impl->metal_view setPaused:true];
@@ -118,17 +131,22 @@ MetalRenderer::MetalRenderer()
     impl->vert = [impl->library newFunctionWithName:@"moon_vertex"];
     impl->frag = [impl->library newFunctionWithName:@"moon_fragment"];
     
-    MTLRenderPipelineDescriptor *pipeline_desc = [MTLRenderPipelineDescriptor new];
+    MTLRenderPipelineDescriptor* pipeline_desc = [MTLRenderPipelineDescriptor new];
     pipeline_desc.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
     pipeline_desc.sampleCount = impl->metal_view.sampleCount;
     pipeline_desc.vertexFunction = impl->vert;
     pipeline_desc.fragmentFunction = impl->frag;
     
-    NSError *err = nil;
+    NSError* err = nil;
     impl->pipeline = [impl->device newRenderPipelineStateWithDescriptor:pipeline_desc error:&err];
     
-    impl->params = [impl->device newBufferWithLength:sizeof(WorldParameters) options:MTLResourceOptionCPUCacheModeDefault];
-    impl->pos = [impl->device newBufferWithLength:sizeof(PlayerPosition) options:MTLResourceOptionCPUCacheModeDefault];
+    MTLSamplerDescriptor* sampler_desc = [MTLSamplerDescriptor new];
+    sampler_desc.sAddressMode = MTLSamplerAddressModeClampToZero;
+    sampler_desc.tAddressMode = MTLSamplerAddressModeClampToZero;
+    sampler_desc.minFilter = MTLSamplerMinMagFilterNearest;
+    sampler_desc.magFilter = MTLSamplerMinMagFilterLinear;
+
+    impl->terrain_sampler = [impl->device newSamplerStateWithDescriptor:sampler_desc];
     
     [impl->metal_view setClearColor: MTLClearColorMake(1.0, 0.0, 0.0, 1.0)];
     
@@ -146,12 +164,13 @@ MetalRenderer::~MetalRenderer()
 
 void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 {
-    MTLTextureDescriptor *tex_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm
+    MTLTextureDescriptor* tex_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm
                                       width:width
                                       height:height
                                       mipmapped:NO];
 
     impl->height_map = [impl->device newTextureWithDescriptor:tex_desc];
+    impl->terrain = impl->height_map;
     
     MTLRegion region = MTLRegionMake2D(0, 0, width, height);
     [impl->height_map replaceRegion:region
@@ -168,12 +187,12 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 
 void MetalRenderer::setParameters(const WorldParameters& params)
 {
-    impl->params = [impl->device newBufferWithBytes:&params length:sizeof(params) options:MTLResourceOptionCPUCacheModeDefault];
+    impl->params = &params; // Currently assuming params is valid for lifetime of renderer
 }
 
 void MetalRenderer::render(const PlayerPosition& pos)
 {
-    impl->pos = [impl->device newBufferWithBytes:&pos length:sizeof(pos) options:MTLResourceOptionCPUCacheModeDefault];
+    impl->pos = &pos;
     
     [impl->metal_view draw];
 }
