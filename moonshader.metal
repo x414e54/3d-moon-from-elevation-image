@@ -42,7 +42,7 @@ inline float getHeightFromColor(float r, float max)
 }
 
 //Finds the height from a uv heightmap
-float2 findUV(float3 pos)
+inline float2 findUV(float3 pos)
 {
 	// Calculate u v
 	normalize(pos);
@@ -70,7 +70,7 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
 	height = getHeightFromColor(height, params.MAXHEIGHTRANGE);
     
     out.position = float4(position[vertexID], 1.0);
-    out.texcoord = float2(height);
+    out.texcoord = (float2(out.position.xy) + 1.0) / 2.0;
     return out;
 }
 

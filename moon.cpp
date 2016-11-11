@@ -98,9 +98,9 @@ int main(int argc, char *argv[])
         parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / 1738.14) * parameters.MAXHEIGHTRANGE;
         
         renderer->setParameters(parameters);
-        
+
         // TODO - Converting format do not just assume RGB, etc.
-        renderer->setHeightMap(heightsimg->pixels, heightsimg->h, heightsimg->w, heightsimg->format->BytesPerPixel); // format);
+        renderer->setHeightMap(heightsimg->pixels, heightsimg->w, heightsimg->h, heightsimg->format->BytesPerPixel); // format);
         SDL_FreeSurface(heightsimg);
     }
 

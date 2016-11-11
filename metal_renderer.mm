@@ -164,7 +164,8 @@ MetalRenderer::~MetalRenderer()
 
 void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 {
-    MTLTextureDescriptor* tex_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm
+    assert(bpp == 4); // Update this later.
+    MTLTextureDescriptor* tex_desc = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
                                       width:width
                                       height:height
                                       mipmapped:NO];
