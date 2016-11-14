@@ -15,6 +15,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
+#include "icosphere.hpp"
+
 @interface DrawDelegate : NSObject <MTKViewDelegate> {
     MetalRendererImpl* _impl;
 }
@@ -38,6 +40,7 @@ struct MetalRendererImpl
     id <MTLFunction> vert;
     id <MTLRenderPipelineState> pipeline;
     id <MTLBuffer> vertex;
+    id <MTLBuffer> index;
     
     const WorldParameters* params;
     const PlayerPosition* pos;
@@ -179,15 +182,13 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
      withBytes:pixels
      bytesPerRow:width * bpp];
     
-    // Collapsed geosphere, just a triangle.
-    float vertex_data[] = /*{ 0.0, 0.0,-0.5,
-                           -0.5, 0.0, 0.5,
-                            0.5, 0.0, 0.5};*/
-                            // Test fullscreen triangle
-                        { 0.0,  1.0, 0.0,
-                         -1.0, -1.0, 0.0,
-                          1.0, -1.0, 0.0};
-    impl->vertex = [impl->device newBufferWithBytes:vertex_data length:sizeof(vertex_data) options:MTLResourceOptionCPUCacheModeDefault];
+    VertexArray array = create_sphere_segment(impl->params->radius, impl->params->pixelsperdegree);
+                        
+    impl->vertex = [impl->device newBufferWithBytes:array.data length:array.length options:MTLResourceOptionCPUCacheModeDefault];
+    impl->index = [impl->device newBufferWithBytes:array.index_data length:array.index_length options:MTLResourceOptionCPUCacheModeDefault];
+    
+    delete[] array.data;
+    delete[] array.index_data;
 }
 
 void MetalRenderer::setParameters(const WorldParameters& params)

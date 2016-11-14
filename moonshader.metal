@@ -18,6 +18,7 @@ struct WorldParameters
     int height;
     int anglearea;
     int pixelsperdegree;
+	float radius;
 };
 
 struct PlayerParameters
@@ -27,6 +28,12 @@ struct PlayerParameters
     float radius;
     float viewheight;
     float orientation;
+};
+
+struct VertexIn
+{
+    packed_float3 position;
+    packed_float3 normal;
 };
 
 struct VertexOut
@@ -42,16 +49,14 @@ inline float getHeightFromColor(float r, float max)
 }
 
 //Finds the height from a uv heightmap
-inline float2 findUV(float3 pos)
+inline float2 findUV(float3 normal, float radius)
 {
 	// Calculate u v
-	normalize(pos);
+	float3 pos = normal * radius;
 
 	float u = 0.5 + (atan2(pos.z, pos.x) / (2*PI));
 	float v = 0.5 - (2.0 * (asin(pos.y) / (2*PI)));
-	// Calculate array position on image;
 
-	//if (isnan(u) || isnan(v)) return 0;    // some uv are comming back nan this needs to be fixed, such as removing these vertices
     return float2(u, v);
 }
 
@@ -62,7 +67,7 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
                              uint vertexID [[vertex_id]])
 {
     VertexOut out;
-    float2 uv = findUV(position[vertexID]);
+    float2 uv = findUV(position[vertexID], params.radius);
     int ix = round(uv.x*(params.width - 1));
 	int iy = round(uv.y*(params.height - 1));
     
@@ -70,6 +75,7 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
 	height = getHeightFromColor(height, params.MAXHEIGHTRANGE);
     
     out.position = float4(position[vertexID], 1.0);
+    out.position.z -= height;
     out.texcoord = (float2(out.position.xy) + 1.0) / 2.0;
     return out;
 }

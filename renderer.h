@@ -18,6 +18,7 @@ struct WorldParameters
 	int height;
 	int anglearea;
 	int pixelsperdegree;
+	float radius;
 };
 
 struct PlayerPosition

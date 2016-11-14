@@ -91,11 +91,12 @@ int main(int argc, char *argv[])
         parameters.width = heightsimg->w;
         parameters.height = heightsimg->h;
         parameters.pixelsperdegree = parameters.width / 360;
+        parameters.radius = 1738.14;
         parameters.anglearea = 20;
 #if !__APPLE__
         if (argc>2) { parameters.MAXHEIGHTRANGE = atoi(argv[2]); }
 #endif
-        parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / 1738.14) * parameters.MAXHEIGHTRANGE;
+        parameters.MAXHEIGHTRANGE = ((heightsimg->w / (2 * PI)) / parameters.radius) * parameters.MAXHEIGHTRANGE;
         
         renderer->setParameters(parameters);
 
