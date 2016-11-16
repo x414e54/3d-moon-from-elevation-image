@@ -8,6 +8,8 @@
 
 #include "icosphere.hpp"
 
+#include <cmath>
+
 #include "renderer.h"
 
 struct Vector3
@@ -28,18 +30,38 @@ struct Matrix3
 
 inline Vector3 rotate_vertex(const Vector3& vertex, const Matrix3& rotation)
 {
-    return vertex;
+    return Vector3((vertex.x * rotation.a.x) + (vertex.y * rotation.b.x) + (vertex.z * rotation.c.x),
+                   (vertex.x * rotation.a.y) + (vertex.y * rotation.b.y) + (vertex.z * rotation.c.y),
+                   (vertex.x * rotation.a.z) + (vertex.y * rotation.b.z) + (vertex.z * rotation.c.z));
 }
 
 inline Matrix3 make_rotation_matrix(const Vector3& axis, float rotation)
 {
-    return Matrix3(axis, axis, axis);
+    float sin_angle = std::sinf(rotation);
+    float cos_angle = std::cosf(rotation);
+    return Matrix3(Vector3(cos_angle + (axis.x*axis.x*(1-cos_angle)),
+                           (axis.y * axis.x * (1-cos_angle)) + axis.z * sin_angle,
+                           (axis.z * axis.x * (1-cos_angle)) + axis.y * sin_angle),
+                   
+                   Vector3((axis.x * axis.y * (1-cos_angle)) + axis.z * sin_angle,
+                           cos_angle + (axis.y*axis.y*(1-cos_angle)),
+                           (axis.z * axis.y * (1-cos_angle)) + axis.x * sin_angle),
+                   
+                   Vector3((axis.x * axis.z * (1-cos_angle)) + axis.y * sin_angle,
+                           (axis.y * axis.z * (1-cos_angle)) + axis.x * sin_angle,
+                           cos_angle + (axis.z*axis.z*(1-cos_angle))));
+}
+
+inline float calc_radians_per_pixel(float ppd)
+{
+    return PI/(180.0 * ppd);
 }
 
 VertexArray create_sphere_segment(float radius, float ppd)
 {
     float arc_angle = 360/4;
-    float num_pixels = ppd * arc_angle;    float num_verticies = ((num_pixels * num_pixels) + num_pixels) / 2.0;
+    float num_pixels = ppd * arc_angle;
+    float num_verticies = ((num_pixels * num_pixels) + num_pixels) / 2.0;
     float num_faces = ((num_pixels * num_pixels) - (2.0 * num_pixels));
     float num_indicies = 3 * num_faces;
     
@@ -49,11 +71,15 @@ VertexArray create_sphere_segment(float radius, float ppd)
     array.index_length = num_indicies * sizeof(int);
     array.index_data = new int[array.index_length];
     
-    Matrix3 col = make_rotation_matrix(Vector3(0.0, 0.0, 0.0), 1.0 / ppd);
-    Matrix3 row = make_rotation_matrix(Vector3(0.0, 0.0, 0.0), 1.0 / ppd);
+    float rot_cos = std::cosf(PI / 6.0);
+    float rot_sin = std::sinf(PI / 6.0);
+    float rpp = calc_radians_per_pixel(ppd);
     
-    Vector3 start(0.0, 0.0, 0.0);
-    Vector3 vertex(0.0, 0.0, 0.0);
+    Matrix3 col = make_rotation_matrix(Vector3(rot_cos, 0.0, -rot_sin), rpp);
+    Matrix3 row = make_rotation_matrix(Vector3(-rot_cos, 0.0, -rot_sin), rpp);
+    
+    Vector3 start(0.0, radius, 0.0);
+    Vector3 vertex(0.0, radius, 0.0);
     
     int vertex_index = 0;
     int col_length = 0;
@@ -61,8 +87,8 @@ VertexArray create_sphere_segment(float radius, float ppd)
         col_length = num_pixels - i;
         for (int j = 0; j < col_length; ++j) {
             array.data[vertex_index] = vertex.x;
-            array.data[vertex_index + 2] = vertex.y;
-            array.data[vertex_index + 3] = vertex.z;
+            array.data[vertex_index + 1] = vertex.y;
+            array.data[vertex_index + 2] = vertex.z;
             vertex_index += 3;
             vertex = rotate_vertex(vertex, row);
         }
