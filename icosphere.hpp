@@ -15,6 +15,8 @@ struct VertexArray
     int length; // Should be 64bit later
     int* index_data;
     int index_length; // Should be 64bit later
+    
+    int num_indicies;
 };
 
 extern VertexArray create_sphere_segment(float radius, float ppd);

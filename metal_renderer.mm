@@ -42,6 +42,8 @@ struct MetalRendererImpl
     id <MTLBuffer> vertex;
     id <MTLBuffer> index;
     
+    int num_indicies;
+    
     const WorldParameters* params;
     const PlayerPosition* pos;
     
@@ -84,10 +86,11 @@ drawableSizeWillChange:(CGSize)size
                  atIndex:2];
     [encoder setFragmentBytes:_impl->params length:sizeof(WorldParameters)
                  atIndex:0];
-    [encoder drawPrimitives:MTLPrimitiveTypeTriangle
-                 vertexStart:0
-                 vertexCount:3
-                 instanceCount:1];
+    [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+                 indexCount:_impl->num_indicies
+                 indexType:MTLIndexTypeUInt32
+                 indexBuffer:_impl->index
+                 indexBufferOffset:0];
     [encoder endEncoding];
 }
 
@@ -186,6 +189,7 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
 
     impl->vertex = [impl->device newBufferWithBytes:array.data length:array.length options:MTLResourceOptionCPUCacheModeDefault];
     impl->index = [impl->device newBufferWithBytes:array.index_data length:array.index_length options:MTLResourceOptionCPUCacheModeDefault];
+    impl->num_indicies = array.num_indicies;
     
     delete[] array.data;
     delete[] array.index_data;

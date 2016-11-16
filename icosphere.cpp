@@ -67,12 +67,12 @@ VertexArray create_sphere_segment(float radius, float ppd)
     int num_pixels = ppd * arc_angle;
     int num_verticies = ((num_pixels * num_pixels) + num_pixels) / 2.0;
     int num_faces = ((num_pixels * num_pixels) - (2.0 * num_pixels)) + 1.0;
-    int num_indicies = 3 * num_faces;
     
     VertexArray array;
+    array.num_indicies = 3 * num_faces;
     array.length = num_verticies * sizeof(float) * 3;
     array.data = new float[array.length];
-    array.index_length = num_indicies * sizeof(int);
+    array.index_length = array.num_indicies * sizeof(int);
     array.index_data = new int[array.index_length];
     
     float rot_cos = std::cosf(PI / 6.0);
@@ -100,8 +100,8 @@ VertexArray create_sphere_segment(float radius, float ppd)
         vertex = start;
     }
     
-    for (int i = 0; i < num_faces; ++i) {
-        
+    for (int i = 0; i < array.num_indicies; ++i) {
+        array.index_data[i] = i;
     }
     
     return array;
