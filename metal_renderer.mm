@@ -183,7 +183,7 @@ void MetalRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
      bytesPerRow:width * bpp];
     
     VertexArray array = create_sphere_segment(impl->params->radius, impl->params->pixelsperdegree);
-                        
+
     impl->vertex = [impl->device newBufferWithBytes:array.data length:array.length options:MTLResourceOptionCPUCacheModeDefault];
     impl->index = [impl->device newBufferWithBytes:array.index_data length:array.index_length options:MTLResourceOptionCPUCacheModeDefault];
     

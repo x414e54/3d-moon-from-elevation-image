@@ -75,7 +75,9 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
 	height = getHeightFromColor(height, params.MAXHEIGHTRANGE);
     
     out.position = float4(position[vertexID], 1.0);
-    out.position.z -= height;
+    out.position.y = out.position.z; // DEBUG - test to face screen
+    out.position.z = 0.0; // DEBUG - test to face screen
+    //out.position.y -= height;
     out.texcoord = (float2(out.position.xy) + 1.0) / 2.0;
     return out;
 }
