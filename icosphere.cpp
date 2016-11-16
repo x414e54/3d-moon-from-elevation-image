@@ -79,8 +79,8 @@ VertexArray create_sphere_segment(float radius, float ppd)
     float rot_sin = std::sinf(PI / 6.0);
     float rpp = calc_radians_per_pixel(ppd);
     
-    Matrix3 col = make_rotation_matrix(Vector3(rot_cos, 0.0, -rot_sin), rpp);
-    Matrix3 row = make_rotation_matrix(Vector3(-rot_cos, 0.0, -rot_sin), rpp);
+    Matrix3 col = make_rotation_matrix(Vector3(-rot_cos, 0.0, -rot_sin), rpp);
+    Matrix3 row = make_rotation_matrix(Vector3(-rot_cos, 0.0, rot_sin), rpp);
     
     Vector3 start(0.0, radius, 0.0);
     Vector3 vertex(0.0, radius, 0.0);
