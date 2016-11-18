@@ -35,6 +35,7 @@ inline Vector3 rotate_vertex(const Vector3& vertex, const Matrix3& rotation)
                    (vertex.x * rotation.a.z) + (vertex.y * rotation.b.z) + (vertex.z * rotation.c.z));
 }
 
+// Convert to glm
 inline Matrix3 make_rotation_matrix(const Vector3& axis, float rotation)
 {
     float sin_angle = std::sinf(rotation);

@@ -109,7 +109,10 @@ int main(int argc, char *argv[])
     PlayerPosition pos;    
     pos.speed = 14.0f * (parameters.MAXHEIGHTRANGE/7000.0f); //7km/s
     pos.viewheight = 2.0f / parameters.MAXHEIGHTRANGE / 1000.0f;
-    //pos.radius =
+    pos.projection = glm::perspective(110.0 / PI, 800.0/600.0, 0.1, 10000.0);
+    pos.radius = parameters.radius; // Should not store this here
+    pos.update(0.0f);
+    
     renderer->render(pos);
 
     float lastTime = SDL_GetTicks();
@@ -122,17 +125,21 @@ int main(int argc, char *argv[])
             switch(event.type) {
                 case SDL_QUIT: running = false;
                 /*case SDL_MOUSEMOTION:
-                  //      break;
+                  //      break;*/
                 case SDL_KEYDOWN:
                       switch(event.key.keysym.sym)
                       {
                           case SDLK_LEFT: break;
+                              pos.control_1 = -1.0;
                           case SDLK_UP: break;
+                              pos.control_2 = 1.0;
                           case SDLK_DOWN:  break;
+                              pos.control_2 = -1.0;
                           case SDLK_RIGHT: break;
+                              pos.control_1 = 1.0;
                         default: break;
                       }
-                    break;*/
+                    break;
             }
         }
         pos.update(timeDelta);

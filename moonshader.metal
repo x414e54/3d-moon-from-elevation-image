@@ -23,11 +23,13 @@ struct WorldParameters
 
 struct PlayerParameters
 {
-    float inclination;	
-    float azimuth;
-    float radius;
-    float viewheight;
-    float orientation;
+    float4x4 view_projection;
+	float orientation;
+	float rotation_1;
+	float rotation_2;
+	float heightmap_offset_u;
+	float heightmap_offset_v;
+	float viewheight;
 };
 
 struct VertexIn
@@ -48,12 +50,9 @@ inline float getHeightFromColor(float r, float max)
 	return (max*r*2.0f/255.0f) - max;
 }
 
-//Finds the height from a uv heightmap
-inline float2 findUV(float3 normal, float radius)
+inline float2 findUV(float3 pos)
 {
 	// Calculate u v
-	float3 pos = normal * radius;
-
 	float u = 0.5 + (atan2(pos.z, pos.x) / (2*PI));
 	float v = 0.5 - (2.0 * (asin(pos.y) / (2*PI)));
 
@@ -67,18 +66,16 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
                              uint vertexID [[vertex_id]])
 {
     VertexOut out;
-    float2 uv = findUV(position[vertexID], params.radius);
+    float2 uv = findUV(normalize(position[vertexID]));
     int ix = round(uv.x*(params.width - 1));
 	int iy = round(uv.y*(params.height - 1));
     
+    //Finds the height from a uv heightmap
     float height = height_map.read(uint2(ix, iy)).r;
 	height = getHeightFromColor(height, params.MAXHEIGHTRANGE);
     
-    out.position = float4(position[vertexID], 1.0);
-    out.position.y = out.position.z; // DEBUG - test to face screen
-    out.position.z = 0.0; // DEBUG - test to face screen
-    //out.position.y -= height;
-    out.texcoord = (float2(out.position.xy) + 1.0) / 2.0;
+    out.position = pos.view_projection * float4(position[vertexID], 1.0);
+    out.texcoord = uv;
     return out;
 }
 

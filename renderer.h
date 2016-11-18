@@ -11,6 +11,9 @@
 
 #define PI 3.14159265358979
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 struct WorldParameters
 {
 	float MAXHEIGHTRANGE;
@@ -23,15 +26,35 @@ struct WorldParameters
 
 struct PlayerPosition
 {
-	float inclination;	
-	float azimuth;
-	float radius;
-	float viewheight;
+    glm::mat4x4 view_projection;
 	float orientation;
+	float rotation_1;
+	float rotation_2;
+	float heightmap_offset_u;
+	float heightmap_offset_v;
+	float viewheight;
 	float speed;
+    
+    float radius;
+    int control_1;
+    int control_2;
+    glm::mat4x4 projection;
+    glm::mat4x4 view;
 	void update(float timeDelta)
 	{
-		azimuth+=speed*(timeDelta);
+		heightmap_offset_u+=speed*(timeDelta);
+        
+        rotation_1+=speed*(timeDelta)*control_1;
+        rotation_2+=speed*(timeDelta)*control_2;
+        
+        glm::mat4 temp = glm::translate(glm::mat4(),
+                             glm::vec3(0.0, radius + viewheight, 0.0));
+        temp = glm::rotate(temp, (float)PI/6.0f, glm::vec3(1, 0, 0));
+        temp = glm::rotate(temp, rotation_1, glm::vec3(0, 1, 0));
+        temp = glm::rotate(temp, rotation_2, glm::vec3(1, 0, 0));
+
+        view = glm::inverse(temp);
+        view_projection = projection * view;
 	}
 };
 
