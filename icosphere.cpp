@@ -60,16 +60,12 @@ inline float calc_radians_per_pixel(float ppd)
 VertexArray create_sphere_segment(float radius, float ppd)
 {
     float arc_angle = 360/4;
-    // Debug
-    ppd = (1.0 + std::sqrtf(5.0)) / arc_angle;
-    radius = 1.0;
-    // End Debug
     int num_pixels = ppd * arc_angle;
     int num_verticies = ((num_pixels * num_pixels) + num_pixels) / 2.0;
     int num_faces = ((num_pixels * num_pixels) - (2.0 * num_pixels)) + 1.0;
     
     VertexArray array;
-    array.num_indicies = 3 * 4;//3 * num_faces;
+    array.num_indicies = 3 * num_faces;
     array.length = num_verticies * sizeof(float) * 3;
     array.data = new float[array.length];
     array.index_length = array.num_indicies * sizeof(int);
