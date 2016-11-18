@@ -51,7 +51,7 @@ struct PlayerPosition
         temp = glm::rotate(temp, rotation_1, glm::vec3(0, 1, 0));
         temp = glm::rotate(temp, rotation_2, glm::vec3(1, 0, 0));
 
-        view = glm::inverse(temp);
+        view = temp;//glm::inverse(temp);
         view_projection = projection * view;
 	}
 };
