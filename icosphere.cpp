@@ -100,8 +100,23 @@ VertexArray create_sphere_segment(float radius, float ppd)
         vertex = start;
     }
     
-    for (int i = 0; i < array.num_indicies; ++i) {
-        array.index_data[i] = i;
+    int top = 0;
+    vertex_index = 0;
+    for (int i = 0; i < num_pixels - 1; ++i) {
+        col_length = num_pixels - i;
+        for (int j = 0; j < col_length - 1; ++j) {
+            array.index_data[vertex_index] = top;
+            array.index_data[vertex_index + 1] = col_length + j;
+            array.index_data[vertex_index + 2] = top + 1;
+            vertex_index += 3;
+            if (j > 0) {
+                array.index_data[vertex_index] = top;
+                array.index_data[vertex_index + 1] = col_length + j - 1;
+                array.index_data[vertex_index + 2] = col_length + j;
+                vertex_index += 3;
+            }
+            top += 1;
+        }
     }
     
     return array;
