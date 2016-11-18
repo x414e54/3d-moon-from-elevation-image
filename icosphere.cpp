@@ -61,7 +61,7 @@ VertexArray create_sphere_segment(float radius, float ppd)
 {
     float arc_angle = 360/4;
     // Debug
-    ppd = (1.0 + std::sqrtf(2.0)) / arc_angle;
+    ppd = (1.0 + std::sqrtf(5.0)) / arc_angle;
     radius = 1.0;
     // End Debug
     int num_pixels = ppd * arc_angle;
@@ -69,7 +69,7 @@ VertexArray create_sphere_segment(float radius, float ppd)
     int num_faces = ((num_pixels * num_pixels) - (2.0 * num_pixels)) + 1.0;
     
     VertexArray array;
-    array.num_indicies = 3 * num_faces;
+    array.num_indicies = 3 * 4;//3 * num_faces;
     array.length = num_verticies * sizeof(float) * 3;
     array.data = new float[array.length];
     array.index_length = array.num_indicies * sizeof(int);
@@ -106,17 +106,18 @@ VertexArray create_sphere_segment(float radius, float ppd)
         col_length = num_pixels - i;
         for (int j = 0; j < col_length - 1; ++j) {
             array.index_data[vertex_index] = top;
-            array.index_data[vertex_index + 1] = col_length + j;
+            array.index_data[vertex_index + 1] = col_length + top;
             array.index_data[vertex_index + 2] = top + 1;
             vertex_index += 3;
             if (j > 0) {
                 array.index_data[vertex_index] = top;
-                array.index_data[vertex_index + 1] = col_length + j - 1;
-                array.index_data[vertex_index + 2] = col_length + j;
+                array.index_data[vertex_index + 1] = col_length + top - 1;
+                array.index_data[vertex_index + 2] = col_length + top;
                 vertex_index += 3;
             }
             top += 1;
         }
+        top += 1;
     }
     
     return array;
