@@ -106,7 +106,11 @@ int main(int argc, char *argv[])
     }
 
     SDL_Event event;
-    PlayerPosition pos;    
+    PlayerPosition pos;
+    pos.rotation_1 = 0.0f;
+    pos.rotation_2 = 0.0f;
+    pos.control_1 = 0;
+    pos.control_2 = 0;
     pos.speed = 14.0f * (parameters.MAXHEIGHTRANGE/7000.0f); //7km/s
     pos.viewheight = 2.0f / parameters.MAXHEIGHTRANGE / 1000.0f;
     pos.projection = glm::perspective(110.0 / PI, 800.0/600.0, 0.1, 10000.0);
@@ -129,14 +133,14 @@ int main(int argc, char *argv[])
                 case SDL_KEYDOWN:
                       switch(event.key.keysym.sym)
                       {
-                          case SDLK_LEFT: break;
-                              pos.control_1 = -1.0;
-                          case SDLK_UP: break;
-                              pos.control_2 = 1.0;
-                          case SDLK_DOWN:  break;
-                              pos.control_2 = -1.0;
-                          case SDLK_RIGHT: break;
-                              pos.control_1 = 1.0;
+                          case SDLK_LEFT:
+                              pos.control_1 = -1; break;
+                          case SDLK_UP:
+                              pos.control_2 = 1; break;
+                          case SDLK_DOWN:
+                              pos.control_2 = -1; break;
+                          case SDLK_RIGHT:
+                              pos.control_1 = 1; break;
                         default: break;
                       }
                     break;
