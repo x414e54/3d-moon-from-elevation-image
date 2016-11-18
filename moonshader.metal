@@ -24,12 +24,10 @@ struct WorldParameters
 struct PlayerParameters
 {
     float4x4 view_projection;
-	float orientation;
+	float2 heightmap_offset_uv;
+	float viewheight;
 	float rotation_1;
 	float rotation_2;
-	float heightmap_offset_u;
-	float heightmap_offset_v;
-	float viewheight;
 };
 
 struct VertexIn
@@ -50,13 +48,13 @@ inline float getHeightFromColor(float r, float max)
 	return (max*r*2.0f/255.0f) - max;
 }
 
-inline float2 findUV(float3 pos)
+inline float2 findUV(float3 pos, float2 offset)
 {
 	// Calculate u v
 	float u = 0.5 + (atan2(pos.z, pos.x) / (2*PI));
 	float v = 0.5 - (2.0 * (asin(pos.y) / (2*PI)));
 
-    return float2(u, v);
+    return fract(float2(u, v) + offset);
 }
 
 vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
@@ -66,7 +64,7 @@ vertex VertexOut moon_vertex(device packed_float3* position [[buffer(0)]],
                              uint vertexID [[vertex_id]])
 {
     VertexOut out;
-    float2 uv = findUV(normalize(position[vertexID]));
+    float2 uv = findUV(normalize(position[vertexID]), pos.heightmap_offset_uv);
     int ix = round(uv.x*(params.width - 1));
 	int iy = round(uv.y*(params.height - 1));
     

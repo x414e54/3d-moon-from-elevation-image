@@ -27,14 +27,12 @@ struct WorldParameters
 struct PlayerPosition
 {
     glm::mat4x4 view_projection;
-	float orientation;
+	glm::vec2 heightmap_offset_uv;
+	float viewheight;
 	float rotation_1;
 	float rotation_2;
-	float heightmap_offset_u;
-	float heightmap_offset_v;
-	float viewheight;
-	float speed;
     
+	float speed;
     float radius;
     int control_1;
     int control_2;
@@ -42,7 +40,7 @@ struct PlayerPosition
     glm::mat4x4 view;
 	void update(float timeDelta)
 	{
-		heightmap_offset_u+=speed*(timeDelta);
+		heightmap_offset_uv.y+=speed*(timeDelta);
         
         rotation_1+=speed*(timeDelta)*control_1;
         rotation_2+=speed*(timeDelta)*control_2;
