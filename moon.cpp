@@ -144,6 +144,20 @@ int main(int argc, char *argv[])
                         default: break;
                       }
                     break;
+                case SDL_KEYUP:
+                      switch(event.key.keysym.sym)
+                      {
+                          case SDLK_LEFT:
+                          case SDLK_RIGHT:
+                              pos.control_1 = 0;
+                              pos.control_1 = 0; break;
+                          case SDLK_UP:
+                          case SDLK_DOWN:
+                              pos.control_2 = 0;
+                              pos.control_2 = 0; break;
+                        default: break;
+                      }
+                    break;
             }
         }
         pos.update(timeDelta);
