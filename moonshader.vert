@@ -52,11 +52,6 @@ vec2 findUV(vec3 pos, vec2 offset)
 
 void main()
 {
-    gl_Position = vec4(position.xzy, 1.0);
-    vertex_texcoord = vec2(0.0, 0.0);
-
-    
-    VertexOut out;
     vec2 uv = findUV(normalize(position.xzy), pos.heightmap_offset_uv);
     int ix = round(uv.x*(params.width - 1));
 	int iy = round(uv.y*(params.height - 1));
