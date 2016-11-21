@@ -9,6 +9,7 @@
 #include "icosphere.hpp"
 
 #include <cmath>
+using namespace std;
 
 #include "renderer.h"
 
@@ -38,8 +39,8 @@ inline Vector3 rotate_vertex(const Vector3& vertex, const Matrix3& rotation)
 // Convert to glm
 inline Matrix3 make_rotation_matrix(const Vector3& axis, float rotation)
 {
-    float sin_angle = std::sinf(rotation);
-    float cos_angle = std::cosf(rotation);
+    float sin_angle = sinf(rotation);
+    float cos_angle = cosf(rotation);
     return Matrix3(Vector3(cos_angle + (axis.x*axis.x*(1-cos_angle)),
                            (axis.y * axis.x * (1-cos_angle)) + axis.z * sin_angle,
                            (axis.z * axis.x * (1-cos_angle)) + axis.y * sin_angle),
@@ -72,8 +73,8 @@ VertexArray create_sphere_segment(float radius, float ppd)
     array.index_length = array.num_indicies * sizeof(int);
     array.index_data = new int[array.index_length];
     
-    float rot_cos = std::cosf(PI / 6.0);
-    float rot_sin = std::sinf(PI / 6.0);
+    float rot_cos = cosf(PI / 6.0);
+    float rot_sin = sinf(PI / 6.0);
     float rpp = calc_radians_per_pixel(ppd);
     
     Matrix3 col = make_rotation_matrix(Vector3(-rot_cos, 0.0, -rot_sin), rpp);
