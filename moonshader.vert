@@ -4,25 +4,25 @@
 
 layout(location = 0) in vec3 position;
 
-constant float PI = 3.14159265358979;
+float PI = 3.14159265358979;
 
-struct WorldParameters
+uniform WorldParameters
 {
     float MAXHEIGHTRANGE;
     int width;
     int height;
     int anglearea;
     int pixelsperdegree;
-	float radius;
+    float radius;
 };
 
-struct PlayerParameters
+uniform PlayerParameters
 {
     mat4 view_projection;
-	vec2 heightmap_offset_uv;
-	float viewheight;
-	float rotation_1;
-	float rotation_2;
+    vec2 heightmap_offset_uv;
+    float viewheight;
+    float rotation_1;
+    float rotation_2;
 };
 
 uniform sampler2D heightmap;
@@ -44,7 +44,7 @@ float getHeightFromColor(float r, float max)
 vec2 findUV(vec3 pos, vec2 offset)
 {
     // Calculate u v
-    float u = 0.5 + (atan2(pos.z, pos.x) / (2*PI));
+    float u = 0.5 + (atan(pos.z, pos.x) / (2*PI));
     float v = 0.5 - (2.0 * (asin(pos.y) / (2*PI)));
 
     return fract(vec2(u, v) + offset);
@@ -52,15 +52,15 @@ vec2 findUV(vec3 pos, vec2 offset)
 
 void main()
 {
-    vec2 uv = findUV(normalize(position.xzy), pos.heightmap_offset_uv);
-    int ix = round(uv.x*(params.width - 1));
-	int iy = round(uv.y*(params.height - 1));
+    vec2 uv = findUV(normalize(position.xzy), heightmap_offset_uv);
+    int ix = int(round(uv.x*(float(width) - 1.0)));
+    int iy = int(round(uv.y*(float(height) - 1.0)));
     
     //Finds the height from a uv heightmap
-    float height = texture(heightmap, uint2(ix, iy)).r;
-	height = getHeightFromColor(height, params.MAXHEIGHTRANGE);
+    float height = texture(heightmap, ivec2(ix, iy)).r;
+    height = getHeightFromColor(height, MAXHEIGHTRANGE);
     
-    gl_Position = pos.view_projection * vec4(position.xzy, 1.0);
+    gl_Position = view_projection * vec4(position.xzy, 1.0);
     vertex_texcoord = uv;
 }
 
