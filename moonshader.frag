@@ -2,15 +2,6 @@
 #extension GL_ARB_separate_shader_objects: require
 #extension GL_ARB_explicit_attrib_location: require
 
-uniform WorldParameters
-{
-    float MAXHEIGHTRANGE;
-    int width;
-    int height;
-    int anglearea;
-    int pixelsperdegree;
-};
-
 uniform sampler2D heightmap;
 
 in vec2 vertex_texcoord;

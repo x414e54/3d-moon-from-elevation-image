@@ -15,6 +15,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 
+#include "icosphere.hpp"
+
 struct OpenGLRendererImpl
 {
     SDL_GLContext context = NULL;
@@ -27,6 +29,9 @@ struct OpenGLRendererImpl
     GLuint pos = 0;
     GLuint vao = 0;
     GLuint vbo = 0;
+    GLuint ibo = 0;
+    
+    GLuint num_indicies = 0;
 };
 
 inline char* load_file(const char* name)
@@ -114,7 +119,7 @@ OpenGLRenderer::OpenGLRenderer()
     
     glUniformBlockBinding(impl->vert, 0, 0);
     glUniformBlockBinding(impl->vert, 1, 1);
-    glUniformBlockBinding(impl->frag, 0, 0);
+    //glUniformBlockBinding(impl->frag, 0, 0);
     glBindFragDataLocation(impl->frag, 0, "rt0");
     
     glGenProgramPipelines(1, &impl->pipeline);
@@ -173,27 +178,36 @@ void OpenGLRenderer::setHeightMap(void* pixels, int width, int height, int bpp)
     }
 	
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
-    
-    if (this->impl->vbo == 0) {
-        glGenBuffers(1, &this->impl->vbo);
-    }
-    
-    // Collapsed geosphere, just a triangle.
-    float vertex_data[] = { 0.0, 0.0,-0.5,
-                           -0.5, 0.0, 0.5,
-                            0.5, 0.0, 0.5};
-    
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, this->impl->vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
 }
 
 void OpenGLRenderer::setParameters(const WorldParameters& params)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, impl->params);
     glBufferData(GL_UNIFORM_BUFFER, sizeof(params), &params, GL_STATIC_DRAW);
+    
+    VertexArray array = create_sphere_segment(params.radius, params.pixelsperdegree);
+
+    impl->num_indicies = array.num_indicies;
+ 
+    if (this->impl->vbo == 0) {
+        glGenBuffers(1, &this->impl->vbo);
+    }
+    
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->impl->vbo);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    
+    glBufferData(GL_ARRAY_BUFFER, array.length, array.data, GL_STATIC_DRAW);
+    
+    if (this->impl->ibo == 0) {
+        glGenBuffers(1, &this->impl->ibo);
+    }
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->impl->ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, array.index_length, array.index_data, GL_STATIC_DRAW);
+    
+    delete[] array.data;
+    delete[] array.index_data;
 }
 
 void OpenGLRenderer::render(const PlayerPosition& pos)
@@ -203,6 +217,7 @@ void OpenGLRenderer::render(const PlayerPosition& pos)
     
     // The state should not have changed.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    glDrawElements(GL_TRIANGLES, impl->num_indicies, GL_UNSIGNED_INT, 0);
     SDL_GL_SwapWindow(impl->window);
 }
